@@ -8,3 +8,4 @@ typedef struct {
   unsigned long long ticks;
 } amu_context;
 
+void hello_world();
