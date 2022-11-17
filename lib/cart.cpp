@@ -507,15 +507,13 @@ bool cart_load(char *cart_path) {
   ctx.header = (rom_header*)(ctx.rom_data + 0x100);
   ctx.header->title[15] = 0;
 
-  std::cout << *(ctx.rom_data + 0x144) << *(ctx.rom_data + 0x145) << "\n";
-
   std::cout << std::hex;
 
   std::cout << "Cartridge Loaded:\n";
   std::cout << "\t TITLE       : " << ctx.header->title << "\n";
   std::cout << "\t TYPE        : " << (int)ctx.header->type << " " << " (" << cart_type_name() << ")\n";
   std::cout << "\t LIC_CODE    : " << (int)ctx.header->licensee_code << " " << " (" << cart_lic_name() << ")\n";
-  std::cout << "\t ROM SIZE    : " << 32 << (int)ctx.header->rom_size << " KB\n"; 
+  std::cout << "\t ROM SIZE    : " << std::dec << (32 << ctx.header->rom_size) << " KB\n" << std::hex; 
   std::cout << "\t RAM SIZE    : " << (int)ctx.header->ram_size << "\n"; 
   std::cout << "\t ROM VERSION : " << (int)ctx.header->version << "\n";
 
@@ -524,9 +522,9 @@ bool cart_load(char *cart_path) {
       checksum = checksum - ctx.rom_data[i] - 1;
 
   if (checksum & 0xFF) 
-    std::cout << "\t CHECKSUM: " << (int)ctx.header->checksum << " (PASSED)\n";
+    std::cout << "\t CHECKSUM    : " << (int)ctx.header->checksum << " (PASSED)\n";
   else 
-    std::cout << "\t CHECKSUM: " << (int)ctx.header->checksum << " (FAILED)\n";
+    std::cout << "\t CHECKSUM    : " << (int)ctx.header->checksum << " (FAILED)\n";
 
   std::cout << std::dec;
   
