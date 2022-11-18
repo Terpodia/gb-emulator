@@ -1,4 +1,6 @@
 #include <cart.h>
+#include <sstream>
+#include <iomanip>
 
 static const char *ROM_TYPES[] = {
   "ROM ONLY",
@@ -486,6 +488,43 @@ const char *cart_type_name() {
   return "UNKNOWN";
 }
 
+void print_nintendo_logo(){
+  std::string nintendo_logo[0x30];
+
+  for(int i=0; i<0x30; i++){
+    std::stringstream stream;
+    stream << std::hex << std::setfill('0') << std::setw(2) << (int)ctx.header->logo[i];
+    nintendo_logo[i] = std::string(stream.str());
+  }
+
+  int t[8][12], offset1=0, offset2=0;
+  for(int i=0; i<0x30; i++){
+    if(i == 24) offset1 = 4, offset2 = 24;
+
+    int a = ((int)nintendo_logo[i][0] >= 97) ? (int)nintendo_logo[i][0] - 87 : (int)nintendo_logo[i][0] - 48;
+    int b = ((int)nintendo_logo[i][1] >= 97) ? (int)nintendo_logo[i][1] - 87 : (int)nintendo_logo[i][1] - 48;
+
+    if(i%2 == 0){
+      t[offset1][(i-offset2)/2] = a;
+      t[1+offset1][(i-offset2)/2] = b;
+    }
+    else{
+      t[2+offset1][(i-offset2)/2] = a;
+      t[3+offset1][(i-offset2)/2] = b;
+    }
+  }
+
+  for(int i=0; i<8; i++){
+    for(int j=0; j<12; j++){
+      for(int k=3; k>=0; k--){
+        if(BIT(t[i][j], k)) std::cout << "1";
+        else std::cout << " ";
+      }
+    }
+    std::cout << "\n";
+  }
+}
+
 bool cart_load(char *cart_path) {
   snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart_path);
   FILE *fp = fopen(cart_path, "r");
@@ -509,7 +548,9 @@ bool cart_load(char *cart_path) {
 
   std::cout << std::hex;
 
-  std::cout << "Cartridge Loaded:\n";
+  std::cout << "Cartridge Loaded:\n\n";
+  print_nintendo_logo();
+  std::cout << "\n";
   std::cout << "\t TITLE       : " << ctx.header->title << "\n";
   std::cout << "\t TYPE        : " << (int)ctx.header->type << " " << " (" << cart_type_name() << ")\n";
   std::cout << "\t LIC_CODE    : " << (int)ctx.header->licensee_code << " " << " (" << cart_lic_name() << ")\n";
