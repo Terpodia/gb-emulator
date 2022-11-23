@@ -1,33 +1,12 @@
 #include <cartridge/cart.h>
+#include <cartridge/read_file.h>
 #include <cartridge/debug.h>
-#include <sstream>
-#include <iomanip>
 
 static cart_context ctx;
 
 bool cart_load(char *cart_path) {
-  snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart_path);
-  FILE *fp = fopen(cart_path, "r");
-  if (!fp) {
-    std::cout << "Failed to open: " << cart_path << "\n";
-    return false;
-  }
-  std::cout << "Opened: " << ctx.filename << "\n";
-
-  fseek(fp, 0, SEEK_END);
-  ctx.rom_size = ftell(fp);
-
-  rewind(fp);
-
-  ctx.rom_data = (BYTE*)malloc(ctx.rom_size);
-  fread(ctx.rom_data, ctx.rom_size, 1, fp);
-  fclose(fp);
-
-  ctx.header = (rom_header*)(ctx.rom_data + 0x100);
-  ctx.header->title[15] = 0;
-
+  read_rom_file(cart_path, &ctx);
   print_cart_header(ctx);
-  
   return true;
 }
 
