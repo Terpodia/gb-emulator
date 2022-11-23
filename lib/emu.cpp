@@ -1,6 +1,6 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL.h>
-#include <cart.h>
+#include <cartridge/cart.h>
 #include <emu.h>
 #include <cpu.h>
 
