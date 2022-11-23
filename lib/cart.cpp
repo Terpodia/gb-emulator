@@ -470,14 +470,16 @@ static const char* LIC_CODE[] = {
 static cart_context ctx;
 
 const char *cart_lic_name() {
-  if (ctx.header->licensee_code >= 0xA5) return "UNKNOWN";
+  const bool is_unknown_lic = ctx.header->licensee_code >= 0xA5;
+  if (is_unknown_lic) return "UNKNOWN";
 
-  if (ctx.header->licensee_code == 0x33) {
-    int x = *(ctx.rom_data + 0x144);
-    int y = *(ctx.rom_data + 0x145);
-    int a = (x >= 65) ? x - 55 : x - 48;
-    int b = (y >= 65) ? y - 55 : y - 48;
-    return NEW_LIC_CODE[a * 16 + b];
+  const bool use_new_lic = ctx.header->licensee_code == 0x33;
+  if (use_new_lic) {
+    int ascii_hi = *(ctx.rom_data + 0x144);
+    int ascii_low = *(ctx.rom_data + 0x145);
+    int hex_hi = (ascii_hi >= 65) ? ascii_hi - 55 : ascii_hi - 48;
+    int hex_low = (ascii_low >= 65) ? ascii_low - 55 : ascii_low - 48;
+    return NEW_LIC_CODE[hex_hi * 16 + hex_low];
   }
   return LIC_CODE[ctx.header->licensee_code];
 }
