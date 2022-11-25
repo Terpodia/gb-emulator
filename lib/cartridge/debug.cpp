@@ -2,7 +2,7 @@
 #include <cartridge/constants.h>
 #include <cartridge/logo_utils.h>
 
-const char *cart_lic_name(cart_context ctx) {
+const char *cart_lic_name(cart_context &ctx) {
   const bool is_unknown_lic = ctx.header->licensee_code >= 0xA5;
   if (is_unknown_lic) return "UNKNOWN";
 
@@ -30,13 +30,13 @@ WORD get_checksum(BYTE* rom_data) {
   return checksum;
 }
 
-void print_checksum(cart_context ctx) {
+void print_checksum(cart_context &ctx) {
   WORD checksum = get_checksum(ctx.rom_data);
   std::string status = checksum & 0xFF? " (PASSED)\n" : " (FAILED)\n";
   std::cout << "\t CHECKSUM    : " << (int)ctx.header->checksum << status;
 }
 
-void print_cart_header(cart_context ctx) {
+void print_cart_header(cart_context &ctx) {
   std::cout << std::hex;
   std::cout << "Cartridge Loaded:\n\n";
   decode_and_print_logo(ctx.header->logo);

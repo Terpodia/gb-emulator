@@ -5,7 +5,7 @@
 static cart_context ctx;
 
 bool cart_load(char *cart_path) {
-  read_rom_file(cart_path, &ctx);
+  read_rom_file(cart_path, ctx);
   print_cart_header(ctx);
   return true;
 }
