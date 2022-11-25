@@ -572,3 +572,12 @@ bool cart_load(char *cart_path) {
   return true;
 }
 
+BYTE cart_read(WORD address){
+  // for now just ROM ONLY supported
+  return ctx.rom_data[address];
+}
+
+void cart_write(WORD address, BYTE value){
+  // for now just ROM ONLY supported
+    std::cout << "Not implemented yet\n";
+}

@@ -8,6 +8,10 @@ void delay(unsigned int ms) {
   SDL_Delay(ms);
 }
 
+void emu_cycles(int cpu_cycles){
+  //TODO...
+}
+
 int emu_run(int argc, char **argv) { 
   if(argc < 2) {
     std::cout << "Usage: ./gbemu <rom_file>\n";
@@ -36,7 +40,7 @@ int emu_run(int argc, char **argv) {
     while (SDL_PollEvent(&e)) { 
       if (e.type == SDL_QUIT) quit = true; 
     }
-    if (!cpu_step()) quit = false;
+    if (!cpu_step()) quit = true;
   }
   SDL_DestroyWindow(window);
   SDL_Quit();
