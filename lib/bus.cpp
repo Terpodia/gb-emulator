@@ -1,5 +1,5 @@
 #include <bus.h>
-#include <cart.h>
+#include <cartridge/cart.h>
 
 BYTE bus_read(WORD address){
     // for now ROM ONLY supported
