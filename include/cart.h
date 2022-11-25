@@ -26,3 +26,7 @@ struct cart_context {
 };
 
 bool cart_load(char *cart);
+
+BYTE cart_read(WORD address);
+
+void cart_write(WORD address, BYTE value);

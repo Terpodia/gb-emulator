@@ -1,9 +1,12 @@
 #include <bus.h>
+#include <cart.h>
 
-BYTE bus_read(WORD adress){
-    return 0;
+BYTE bus_read(WORD address){
+    // for now ROM ONLY supported
+    return cart_read(address);
 }
 
-void bus_write(WORD adress, BYTE value){
-
+void bus_write(WORD address, BYTE value){
+    // for now ROM ONLY supported
+    cart_write(address, value);
 }
