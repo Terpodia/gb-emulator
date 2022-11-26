@@ -1,6 +1,6 @@
 #include <cartridge/cart.h>
-#include <cartridge/read_file.h>
 #include <cartridge/debug.h>
+#include <cartridge/read_file.h>
 
 static cart_context ctx;
 
@@ -10,12 +10,12 @@ bool cart_load(char *cart_path) {
   return true;
 }
 
-BYTE cart_read(WORD address){
+BYTE cart_read(WORD address) {
   // for now just ROM ONLY supported
   return ctx.rom_data[address];
 }
 
-void cart_write(WORD address, BYTE value){
+void cart_write(WORD address, BYTE value) {
   // for now just ROM ONLY supported
-    std::cout << "Not implemented yet\n";
+  std::cout << "Not implemented yet\n";
 }

@@ -8,6 +8,6 @@ typedef struct {
   unsigned long long ticks;
 } amu_context;
 
-int emu_run(int argc, char** argv);
+int emu_run(int argc, char **argv);
 
 void emu_cycles(int cpu_cycles);

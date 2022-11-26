@@ -1,8 +1,9 @@
 #pragma once
 
 #include <stdbool.h>
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
+
 #include <iostream>
 
 typedef __int8_t SIGNED_BYTE;

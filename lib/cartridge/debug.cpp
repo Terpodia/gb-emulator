@@ -18,21 +18,19 @@ const char *cart_lic_name(cart_context &ctx) {
 }
 
 const char *cart_type_name(BYTE type) {
-  if (type < 0x23)
-    return ROM_TYPES[type];
+  if (type < 0x23) return ROM_TYPES[type];
   return "UNKNOWN";
 }
 
-WORD get_checksum(BYTE* rom_data) {
+WORD get_checksum(BYTE *rom_data) {
   WORD checksum = 0;
-  for (WORD i=0x0134; i<=0x014C; i++) 
-      checksum = checksum - rom_data[i] - 1;
+  for (WORD i = 0x0134; i <= 0x014C; i++) checksum = checksum - rom_data[i] - 1;
   return checksum;
 }
 
 void print_checksum(cart_context &ctx) {
   WORD checksum = get_checksum(ctx.rom_data);
-  std::string status = checksum & 0xFF? " (PASSED)\n" : " (FAILED)\n";
+  std::string status = checksum & 0xFF ? " (PASSED)\n" : " (FAILED)\n";
   std::cout << "\t CHECKSUM    : " << (int)ctx.header->checksum << status;
 }
 
@@ -42,10 +40,14 @@ void print_cart_header(cart_context &ctx) {
   decode_and_print_logo(ctx.header->logo);
   std::cout << "\n";
   std::cout << "\t TITLE       : " << ctx.header->title << "\n";
-  std::cout << "\t TYPE        : " << (int)ctx.header->type << " " << " (" << cart_type_name(ctx.header->type) << ")\n";
-  std::cout << "\t LIC_CODE    : " << (int)ctx.header->licensee_code << " " << " (" << cart_lic_name(ctx) << ")\n";
-  std::cout << "\t ROM SIZE    : " << std::dec << (32 << ctx.header->rom_size) << " KB\n" << std::hex; 
-  std::cout << "\t RAM SIZE    : " << (int)ctx.header->ram_size << "\n"; 
+  std::cout << "\t TYPE        : " << (int)ctx.header->type << " "
+            << " (" << cart_type_name(ctx.header->type) << ")\n";
+  std::cout << "\t LIC_CODE    : " << (int)ctx.header->licensee_code << " "
+            << " (" << cart_lic_name(ctx) << ")\n";
+  std::cout << "\t ROM SIZE    : " << std::dec << (32 << ctx.header->rom_size)
+            << " KB\n"
+            << std::hex;
+  std::cout << "\t RAM SIZE    : " << (int)ctx.header->ram_size << "\n";
   std::cout << "\t ROM VERSION : " << (int)ctx.header->version << "\n";
   print_checksum(ctx);
   std::cout << std::dec;

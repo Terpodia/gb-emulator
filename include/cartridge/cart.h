@@ -11,7 +11,7 @@ struct rom_header {
   BYTE type;
   BYTE rom_size;
   BYTE ram_size;
-  BYTE destination_code; 
+  BYTE destination_code;
   BYTE licensee_code;
   BYTE version;
   BYTE checksum;

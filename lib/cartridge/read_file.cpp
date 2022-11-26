@@ -1,6 +1,7 @@
-#include <sstream>
-#include <iomanip>
 #include <cartridge/cart.h>
+
+#include <iomanip>
+#include <sstream>
 
 bool read_rom_file(char *cart_path, cart_context &ctx) {
   snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart_path);
@@ -16,11 +17,11 @@ bool read_rom_file(char *cart_path, cart_context &ctx) {
 
   rewind(fp);
 
-  ctx.rom_data = (BYTE*)malloc(ctx.rom_size);
+  ctx.rom_data = (BYTE *)malloc(ctx.rom_size);
   fread(ctx.rom_data, ctx.rom_size, 1, fp);
   fclose(fp);
 
-  ctx.header = (rom_header*)(ctx.rom_data + 0x100);
+  ctx.header = (rom_header *)(ctx.rom_data + 0x100);
   ctx.header->title[15] = 0;
 
   return true;
