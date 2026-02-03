@@ -29,8 +29,20 @@ struct cpu_context {
   bool stepping;
 };
 
-void cpu_init();
+#define CPU_FLAG_Z BIT(ctx.cpu_regs.f, 7)
+#define CPU_FLAG_N BIT(ctx.cpu_regs.f, 6)
+#define CPU_FLAG_H BIT(ctx.cpu_regs.f, 5)
+#define CPU_FLAG_C BIT(ctx.cpu_regs.f, 4)
 
+void cpu_init();
 bool cpu_step();
 
+bool fetch_data();
+
+typedef void (*IN_PROC)();
+
+void setup_instruction_processor();
+IN_PROC get_instruction_processor();
+
 WORD cpu_read_reg(register_type reg_type);
+void cpu_write_reg(register_type reg_type, WORD value);

@@ -71,7 +71,6 @@ enum address_mode {
   AM_HL_SPR,
   AM_D16,
   AM_D8,
-  AM_D16_R,
   AM_MR_D8,
   AM_MR,
   AM_A16_R,
