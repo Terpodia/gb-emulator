@@ -24,6 +24,7 @@ struct cpu_context {
   BYTE cur_opcode;
   instruction *current_instruction;
 
+  bool interrupt_master_enable;
   bool destination_is_memory;
   bool halted;
   bool stepping;

@@ -1,6 +1,7 @@
 #include <cpu.h>
 #include <emu.h>
 #include <bus.h>
+#include <cpu_stack.h>
 #include <instructions.h>
 
 extern cpu_context ctx;
@@ -70,11 +71,96 @@ void proc_LDH(){
     cpu_write_reg(ctx.current_instruction->reg_1, ctx.fetched_data);
 }
 
+void proc_PUSH(){
+    WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+    push((value >> 8) & 0xFF);
+    emu_cycles(1);
+    push(value & 0xFF);
+    emu_cycles(1);
+
+    emu_cycles(1);
+}
+
+void proc_POP(){
+    WORD lo = pop();
+    emu_cycles(1);
+    WORD hi = pop();
+    emu_cycles(1);
+
+    WORD value = (hi << 8) | lo;
+
+    if(ctx.current_instruction->reg_1 == RT_AF)
+        cpu_write_reg(ctx.current_instruction->reg_1, value & 0xFFF0);
+
+    else cpu_write_reg(ctx.current_instruction->reg_1, value);
+}
+
+void proc_RET(){
+  if(ctx.current_instruction->cond_type != CT_NONE)
+      emu_cycles(1);
+
+  if(check_cond()){
+      WORD lo = pop();
+      emu_cycles(1);
+      WORD hi = pop();
+      emu_cycles(1);
+
+      WORD pc = (hi << 8) | lo;
+
+      ctx.cpu_regs.pc = pc;
+
+      emu_cycles(1);
+  }
+}
+
+void proc_CALL(){
+    if(check_cond()){
+        push((ctx.cpu_regs.pc >> 8) & 0xFF);
+        emu_cycles(1);
+
+        push(ctx.cpu_regs.pc & 0xFF);
+        emu_cycles(1);
+
+        ctx.cpu_regs.pc = ctx.fetched_data;
+        emu_cycles(1);
+    }
+}
+
+void proc_JR(){
+  if(check_cond()){
+    ctx.cpu_regs.pc += (char)ctx.fetched_data;
+    emu_cycles(1);
+  }
+}
+
+void proc_RST(){
+    push((ctx.cpu_regs.pc >> 8) & 0xFF);
+    emu_cycles(1);
+
+    push(ctx.cpu_regs.pc & 0xFF);
+    emu_cycles(1);
+
+    ctx.cpu_regs.pc = ctx.current_instruction->param;
+    emu_cycles(1);
+}
+
+void proc_RETI(){
+    ctx.interrupt_master_enable = true;
+    proc_RET();
+}
+
 void setup_instruction_processor(){
   instruction_processor[IN_NOP] = proc_NOP;
   instruction_processor[IN_JP] = proc_JP;
   instruction_processor[IN_LD] = proc_LD;
   instruction_processor[IN_LDH] = proc_LDH;
+  instruction_processor[IN_PUSH] = proc_PUSH;
+  instruction_processor[IN_POP] = proc_POP;
+  instruction_processor[IN_RET] = proc_RET;
+  instruction_processor[IN_CALL] = proc_CALL;
+  instruction_processor[IN_JR] = proc_JR;
+  instruction_processor[IN_RST] = proc_RST;
+  instruction_processor[IN_RETI] = proc_RETI;
 }
 
 IN_PROC get_instruction_processor(){

@@ -8,10 +8,13 @@ void cpu_init() {
   setup_instructions_types();
   setup_instruction_processor();
   ctx.cpu_regs.pc = 0x100;
+  ctx.cpu_regs.sp = 0xFFFE;
   *((WORD *)&ctx.cpu_regs.a) = 0xB001;
   *((WORD *)&ctx.cpu_regs.b) = 0x1300;
   *((WORD *)&ctx.cpu_regs.d) = 0xD800;
   *((WORD *)&ctx.cpu_regs.h) = 0x4D01;
+
+  ctx.interrupt_master_enable = false;
 }
 
 static void fetch_instruction() {
