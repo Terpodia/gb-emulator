@@ -61,10 +61,20 @@ void proc_LD(){
     cpu_write_reg(ctx.current_instruction->reg_1, ctx.fetched_data);
 }
 
+void proc_LDH(){
+    if(ctx.destination_is_memory){
+        bus_write(ctx.memory_destination | 0xFF00, ctx.fetched_data);
+        emu_cycles(1);
+        return;
+    }
+    cpu_write_reg(ctx.current_instruction->reg_1, ctx.fetched_data);
+}
+
 void setup_instruction_processor(){
   instruction_processor[IN_NOP] = proc_NOP;
   instruction_processor[IN_JP] = proc_JP;
   instruction_processor[IN_LD] = proc_LD;
+  instruction_processor[IN_LDH] = proc_LDH;
 }
 
 IN_PROC get_instruction_processor(){

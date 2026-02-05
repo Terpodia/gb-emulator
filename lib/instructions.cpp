@@ -103,8 +103,12 @@ void setup_instructions_types() {
 
   instructions[0xC3] = {IN_JP, AM_D16},
 
+  instructions[0xE0] = {IN_LDH, AM_A8_R, RT_NONE, RT_A},
+  instructions[0xE2] = {IN_LDH, AM_MR_R, RT_C, RT_A},
   instructions[0xEA] = {IN_LD, AM_A16_R, RT_NONE, RT_A},
 
+  instructions[0xF0] = {IN_LDH, AM_R_A8, RT_A},
+  instructions[0xF2] = {IN_LDH, AM_R_MR, RT_A, RT_C},
   instructions[0xF8] = {IN_LD, AM_HL_SPR, RT_HL, RT_SP},
   instructions[0xF9] = {IN_LD, AM_R_R, RT_SP, RT_HL},
   instructions[0xFA] = {IN_LD, AM_R_A16, RT_A};
