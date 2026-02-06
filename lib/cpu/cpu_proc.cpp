@@ -52,8 +52,8 @@ void proc_LD(){
     }
     if(ctx.current_instruction->addr_mode == AM_HL_SPR){
         WORD value = cpu_read_reg(RT_SP);
-        BYTE h = (value & (1<<3)) && !((value + ctx.fetched_data) & (1<<3));
-        BYTE c = (value & (1<<7)) && !((value + ctx.fetched_data) & (1<<7));
+        BYTE h = ((value & 0xF) + (ctx.fetched_data & 0xF)) > 0xF;
+        BYTE c = ((value & 0xFF) + (ctx.fetched_data & 0xFF)) > 0xFF;
 
         cpu_write_reg(RT_HL, value + (char)ctx.fetched_data);
         cpu_set_flags(0, 0, h, c);
@@ -149,6 +149,115 @@ void proc_RETI(){
     proc_RET();
 }
 
+void proc_INC(){
+    if(ctx.destination_is_memory){
+        bus_write(ctx.memory_destination, ctx.fetched_data + 1);
+        emu_cycles(1);
+
+        BYTE h = ((ctx.fetched_data & 0xF) + 1) > 0xF;
+        BYTE z = (ctx.fetched_data + 1) == 0;
+        cpu_set_flags(z, 0, h, -1);
+
+        return;
+    }
+    cpu_write_reg(ctx.current_instruction->reg_1, ctx.fetched_data + 1);
+    if(is_16_bit_register(ctx.current_instruction->reg_1)){
+        emu_cycles(1);
+        return;
+    }
+    BYTE h = ((ctx.fetched_data & 0xF) + 1) > 0xF;
+    BYTE z = ((ctx.fetched_data + 1) & 0xFF) == 0;
+    cpu_set_flags(z, 0, h, -1);
+}
+
+void proc_DEC(){
+    if(ctx.destination_is_memory){
+        bus_write(ctx.memory_destination, ctx.fetched_data - 1);
+        emu_cycles(1);
+
+        BYTE h = ((ctx.fetched_data & 0xF) == 0);
+        BYTE z = (ctx.fetched_data - 1) == 0;
+        cpu_set_flags(z, 1, h, -1);
+
+        return;
+    }
+    cpu_write_reg(ctx.current_instruction->reg_1, ctx.fetched_data - 1);
+    if(is_16_bit_register(ctx.current_instruction->reg_1)){
+        emu_cycles(1);
+        return;
+    }
+
+    BYTE h = ((ctx.fetched_data & 0xF) == 0);
+    BYTE z = (ctx.fetched_data - 1) == 0;
+    cpu_set_flags(z, 1, h, -1);
+}
+
+void proc_ADD(){
+    if(ctx.current_instruction->reg_1 == RT_HL){
+        WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+
+        cpu_write_reg(ctx.current_instruction->reg_1, value + ctx.fetched_data);
+
+        BYTE h = ((value & 0xFFF) + (ctx.fetched_data & 0xFFF)) > 0xFFF;
+        BYTE c = ((int)value + (int)ctx.fetched_data) > 0xFFFF;
+        cpu_set_flags(-1, 0, h, c);
+
+        emu_cycles(1);
+        return;
+    }
+    if(ctx.current_instruction->reg_1 == RT_SP){
+        WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+
+        cpu_write_reg(ctx.current_instruction->reg_1, value + (char)ctx.fetched_data);
+
+        BYTE h = ((value & 0xF) + (ctx.fetched_data) & 0xF) > 0xF;
+        BYTE c = ((value & 0xFF) + (ctx.fetched_data) & 0xFF) > 0xFF;
+        cpu_set_flags(0, 0, h, c);
+
+        emu_cycles(2);
+        return;
+    }
+    WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+
+    cpu_write_reg(ctx.current_instruction->reg_1, value + ctx.fetched_data);
+
+    BYTE z = ((value + ctx.fetched_data) & 0xFF) == 0;
+    BYTE h = ((value & 0xF) + (ctx.fetched_data & 0xF)) > 0xF;
+    BYTE c = ((value & 0xFF) + (ctx.fetched_data & 0xFF)) > 0xFF;
+    cpu_set_flags(z, 0, h, c);
+}
+
+void proc_SUB(){
+  WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+  cpu_write_reg(ctx.current_instruction->reg_1, value - ctx.fetched_data);
+
+  BYTE z = ((value - ctx.fetched_data) & 0xFF) == 0;
+  BYTE h = (value & 0xF) < (ctx.fetched_data & 0xF);
+  BYTE c = (value & 0xFF) < (ctx.fetched_data & 0xFF);
+
+  cpu_set_flags(z, 1, h, c);
+}
+
+void proc_ADC(){
+  WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+  cpu_write_reg(ctx.current_instruction->reg_1, value + ctx.fetched_data + CPU_FLAG_C);
+  BYTE z = ((value + ctx.fetched_data + CPU_FLAG_C) & 0xFF) == 0;
+  BYTE h = ((value & 0xF) + (ctx.fetched_data & 0xF) + CPU_FLAG_C) > 0xF;
+  BYTE c = ((value & 0xFF) + (ctx.fetched_data & 0xFF) + CPU_FLAG_C) > 0xFF;
+  cpu_set_flags(z, 0, h, c);
+}
+
+void proc_SBC(){
+  WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+  cpu_write_reg(ctx.current_instruction->reg_1, value - ctx.fetched_data - CPU_FLAG_C);
+
+  BYTE z = ((value - ctx.fetched_data - CPU_FLAG_C) & 0xFF) == 0;
+  BYTE h = (value & 0xF) < ((ctx.fetched_data & 0xF) + CPU_FLAG_C);
+  BYTE c = (value & 0xFF) < ((ctx.fetched_data & 0xFF) + CPU_FLAG_C);
+
+  cpu_set_flags(z, 1, h, c);
+}
+
 void setup_instruction_processor(){
   instruction_processor[IN_NOP] = proc_NOP;
   instruction_processor[IN_JP] = proc_JP;
@@ -161,6 +270,12 @@ void setup_instruction_processor(){
   instruction_processor[IN_JR] = proc_JR;
   instruction_processor[IN_RST] = proc_RST;
   instruction_processor[IN_RETI] = proc_RETI;
+  instruction_processor[IN_INC] = proc_INC;
+  instruction_processor[IN_DEC] = proc_DEC;
+  instruction_processor[IN_ADD] = proc_ADD;
+  instruction_processor[IN_SUB] = proc_SUB;
+  instruction_processor[IN_ADC] = proc_ADC;
+  instruction_processor[IN_SBC] = proc_SBC;
 }
 
 IN_PROC get_instruction_processor(){
