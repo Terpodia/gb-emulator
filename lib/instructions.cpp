@@ -13,6 +13,7 @@ void setup_instructions_types() {
   instructions[0x05] = {IN_DEC, AM_R, RT_B},
   instructions[0x05] = {IN_DEC, AM_R, RT_B},
   instructions[0x06] = {IN_LD, AM_R_D8, RT_B},
+  instructions[0x07] = {IN_RLCA, AM_R, RT_A},
   instructions[0x08] = {IN_LD, AM_A16_R, RT_NONE, RT_SP},
   instructions[0x09] = {IN_ADD, AM_R_R, RT_HL, RT_BC},
   instructions[0x0A] = {IN_LD, AM_R_MR, RT_A, RT_BC},
@@ -20,6 +21,7 @@ void setup_instructions_types() {
   instructions[0x0C] = {IN_INC, AM_R, RT_C},
   instructions[0x0D] = {IN_DEC, AM_R, RT_C},
   instructions[0x0E] = {IN_LD, AM_R_D8, RT_C},
+  instructions[0x0F] = {IN_RRCA, AM_R, RT_A},
 
   instructions[0x11] = {IN_LD, AM_R_D16, RT_DE},
   instructions[0x12] = {IN_LD, AM_MR_R, RT_DE, RT_A},
@@ -27,6 +29,7 @@ void setup_instructions_types() {
   instructions[0x14] = {IN_INC, AM_R, RT_D},
   instructions[0x15] = {IN_DEC, AM_R, RT_D},
   instructions[0x16] = {IN_LD, AM_R_D8, RT_D},
+  instructions[0x17] = {IN_RLA, AM_R, RT_A},
   instructions[0x18] = {IN_JR, AM_D8},
   instructions[0x19] = {IN_ADD, AM_R_R, RT_HL, RT_DE},
   instructions[0x1A] = {IN_LD, AM_R_MR, RT_A, RT_DE},
@@ -34,6 +37,7 @@ void setup_instructions_types() {
   instructions[0x1C] = {IN_INC, AM_R, RT_E},
   instructions[0x1D] = {IN_DEC, AM_R, RT_E},
   instructions[0x1E] = {IN_LD, AM_R_D8, RT_E},
+  instructions[0x1F] = {IN_RRA, AM_R, RT_A},
 
   instructions[0x20] = {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_NZ},
   instructions[0x21] = {IN_LD, AM_R_D16, RT_HL},
@@ -42,6 +46,7 @@ void setup_instructions_types() {
   instructions[0x24] = {IN_INC, AM_R, RT_H},
   instructions[0x25] = {IN_DEC, AM_R, RT_H},
   instructions[0x26] = {IN_LD, AM_R_D8, RT_H},
+  instructions[0x27] = {IN_DAA},
   instructions[0x28] = {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_Z},
   instructions[0x29] = {IN_ADD, AM_R_R, RT_HL, RT_HL},
   instructions[0x2A] = {IN_LD, AM_R_HLI, RT_A, RT_HL}, 
@@ -49,6 +54,7 @@ void setup_instructions_types() {
   instructions[0x2C] = {IN_INC, AM_R, RT_L},
   instructions[0x2D] = {IN_DEC, AM_R, RT_L},
   instructions[0x2E] = {IN_LD, AM_R_D8, RT_L},
+  instructions[0x2F] = {IN_CPL},
 
   instructions[0x30] = {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_NC},
   instructions[0x31] = {IN_LD, AM_R_D16, RT_SP},
@@ -57,6 +63,7 @@ void setup_instructions_types() {
   instructions[0x34] = {IN_INC, AM_MR, RT_HL},
   instructions[0x35] = {IN_DEC, AM_MR, RT_HL},
   instructions[0x36] = {IN_LD, AM_MR_D8, RT_HL},
+  instructions[0x37] = {IN_SCF},
   instructions[0x38] = {IN_JR, AM_D8, RT_NONE, RT_NONE, CT_C},
   instructions[0x39] = {IN_ADD, AM_R_R, RT_HL, RT_SP},
   instructions[0x3A] = {IN_LD, AM_R_HLD, RT_A, RT_HL},
@@ -64,6 +71,7 @@ void setup_instructions_types() {
   instructions[0x3C] = {IN_INC, AM_R, RT_A},
   instructions[0x3D] = {IN_DEC, AM_R, RT_A},
   instructions[0x3E] = {IN_LD, AM_R_D8, RT_A},
+  instructions[0x3F] = {IN_CCF},
 
   instructions[0x40] = {IN_LD, AM_R_R, RT_B, RT_B},
   instructions[0x41] = {IN_LD, AM_R_R, RT_B, RT_C},

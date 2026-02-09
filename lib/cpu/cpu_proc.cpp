@@ -408,6 +408,79 @@ void proc_CB(){
   }
 }
 
+void proc_RLA(){
+  BYTE val = cpu_read_reg(ctx.current_instruction->reg_1);
+
+  BYTE c = BIT(val, 7);
+  val <<= 1;
+  val |= CPU_FLAG_C;
+
+  cpu_write_reg(ctx.current_instruction->reg_1, val);
+  cpu_set_flags(0, 0, 0, c);
+}
+
+void proc_RLCA(){
+  BYTE val = cpu_read_reg(ctx.current_instruction->reg_1);
+
+  BYTE c = BIT(val, 7);
+  val <<= 1;
+  val |= c;
+
+  cpu_write_reg(ctx.current_instruction->reg_1, val);
+  cpu_set_flags(0, 0, 0, c);
+}
+
+void proc_RRA(){
+  BYTE val = cpu_read_reg(ctx.current_instruction->reg_1);
+
+  BYTE c = BIT(val, 1);
+  val >>= 1;
+  val |= (CPU_FLAG_C) << 7;
+
+  cpu_write_reg(ctx.current_instruction->reg_1, val);
+  cpu_set_flags(0, 0, 0, c);
+}
+
+void proc_RRCA(){
+  BYTE val = cpu_read_reg(ctx.current_instruction->reg_1);
+
+  BYTE c = BIT(val, 1);
+  val >>= 1;
+  val |= c << 7;
+
+  cpu_write_reg(ctx.current_instruction->reg_1, val);
+  cpu_set_flags(0, 0, 0, c);
+}
+
+void proc_CPL(){
+  ctx.cpu_regs.a = ~ctx.cpu_regs.a;
+  cpu_set_flags(-1, 1, 1, -1);
+}
+
+void proc_CCF(){
+  cpu_set_flags(-1, 0, 0, !CPU_FLAG_C);
+}
+
+void proc_SCF(){
+  cpu_set_flags(-1, 0, 0, 1);
+}
+
+void proc_DAA(){
+  if(CPU_FLAG_N){
+    BYTE adj = 0;
+    if(CPU_FLAG_H) adj += 0x6;
+    if(CPU_FLAG_C) adj += 0x60;
+    ctx.cpu_regs.a -= adj;
+  }
+  else{
+    BYTE adj = 0;
+    if(CPU_FLAG_H || (ctx.cpu_regs.a & 0xF) > 0x9) adj += 0x6;
+    if(CPU_FLAG_C || ctx.cpu_regs.a > 0x99) adj += 0x60, cpu_set_flags(-1, -1, -1, 1);
+    ctx.cpu_regs.a += adj;
+  }
+  cpu_set_flags(ctx.cpu_regs.a == 0, -1, 0, -1);
+}
+
 void setup_instruction_processor(){
   instruction_processor[IN_NOP] = proc_NOP;
   instruction_processor[IN_JP] = proc_JP;
@@ -431,6 +504,14 @@ void setup_instruction_processor(){
   instruction_processor[IN_OR] = proc_OR;
   instruction_processor[IN_XOR] = proc_XOR;
   instruction_processor[IN_CB] = proc_CB;
+  instruction_processor[IN_RLA] = proc_RLA;
+  instruction_processor[IN_RLCA] = proc_RLCA;
+  instruction_processor[IN_RRA] = proc_RRA;
+  instruction_processor[IN_RRCA] = proc_RRCA;
+  instruction_processor[IN_CPL] = proc_CPL;
+  instruction_processor[IN_CCF] = proc_CCF;
+  instruction_processor[IN_SCF] = proc_SCF;
+  instruction_processor[IN_DAA] = proc_DAA;
 }
 
 IN_PROC get_instruction_processor(){
