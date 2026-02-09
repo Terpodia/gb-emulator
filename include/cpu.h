@@ -47,3 +47,6 @@ IN_PROC get_instruction_processor();
 
 WORD cpu_read_reg(register_type reg_type);
 void cpu_write_reg(register_type reg_type, WORD value);
+
+BYTE cpu_read_reg8(register_type reg_type);
+void cpu_write_reg8(register_type reg_type, BYTE value);

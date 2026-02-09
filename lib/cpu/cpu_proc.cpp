@@ -258,6 +258,156 @@ void proc_SBC(){
   cpu_set_flags(z, 1, h, c);
 }
 
+void proc_CP(){
+  WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+  BYTE z = ((value - ctx.fetched_data) & 0xFF) == 0;
+  BYTE h = (value & 0xF) < (ctx.fetched_data & 0xF);
+  BYTE c = (value & 0xFF) < (ctx.fetched_data & 0xFF);
+  cpu_set_flags(z, 1, h, c);
+}
+
+void proc_AND(){
+  WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+  cpu_write_reg(ctx.current_instruction->reg_1, value & ctx.fetched_data);
+
+  BYTE z = (value & ctx.fetched_data) == 0;
+
+  cpu_set_flags(z, 0, 1, 0);
+}
+
+void proc_OR(){
+  WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+  cpu_write_reg(ctx.current_instruction->reg_1, value | ctx.fetched_data);
+
+  BYTE z = (value | ctx.fetched_data) == 0;
+
+  cpu_set_flags(z, 0, 0, 0);
+}
+
+void proc_XOR(){
+  WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+  cpu_write_reg(ctx.current_instruction->reg_1, value ^ ctx.fetched_data);
+
+  BYTE z = (value ^ ctx.fetched_data) == 0;
+
+  cpu_set_flags(z, 0, 0, 0);
+}
+
+register_type rt_lookup[] = {RT_B, RT_C, RT_D, RT_E, RT_H, RT_L, RT_HL, RT_A};
+
+void proc_CB(){
+  WORD op_code = ctx.fetched_data;
+  register_type reg = rt_lookup[op_code & 7];
+
+  if(reg == RT_HL) emu_cycles(2);
+
+  BYTE val = cpu_read_reg8(reg);
+  BYTE bit_index = (op_code >> 3) & 7;
+
+  switch((op_code >> 6) & 3){
+    case 1:
+      cpu_set_flags(!BIT(val, bit_index), 0, 1, -1);
+      return;
+   
+    case 2:
+      val &= ~(1<<bit_index);
+      cpu_write_reg8(reg, val);
+      return;
+    
+    case 3:
+      val |= (1<<bit_index);
+      cpu_write_reg8(reg, val);
+      return;
+  }
+  switch((op_code >> 3) & 7){
+    case 0:{
+      BYTE c = BIT(val, 7);
+      val <<= 1;
+      if(c) val |= 1;
+
+      BYTE z = val == 0;
+
+      cpu_write_reg8(reg, val);
+      cpu_set_flags(z, 0, 0, c);
+      return;
+    }
+    case 1:{
+      BYTE c = val & 1;
+      val >>= 1;
+      if(c) val |= (1<<7);
+
+      BYTE z = val == 0;
+
+      cpu_write_reg8(reg, val);
+      cpu_set_flags(z, 0, 0, c);
+      return;
+    }
+    case 2:{
+      BYTE c = BIT(val, 7);
+      val <<= 1;
+      val |= CPU_FLAG_C;
+
+      BYTE z = val == 0;
+
+      cpu_write_reg8(reg, val);
+      cpu_set_flags(z, 0, 0, c);
+      return;
+    }
+
+    case 3:{
+      BYTE c = val & 1;
+      val >>= 1;
+      if(CPU_FLAG_C) val |= (1<<7);
+
+      BYTE z = val == 0;
+
+      cpu_write_reg8(reg, val);
+      cpu_set_flags(z, 0, 0, c);
+      return;
+    }
+
+    case 4:{
+      BYTE c = BIT(val, 7);
+      val <<= 1;
+
+      BYTE z = val == 0;
+
+      cpu_write_reg8(reg, val);
+      cpu_set_flags(z, 0, 0, c);
+      return;
+    }
+
+    case 5:{
+      BYTE c = val & 1;
+      val = (int8_t)val >> 1;
+
+      BYTE z = val == 0;
+
+      cpu_write_reg8(reg, val);
+      cpu_set_flags(z, 0, 0, c);
+      return;
+    }
+
+    case 6:{
+      val = (val >> 4) | (val << 4);
+      cpu_write_reg8(reg, val);
+      cpu_set_flags(val == 0, 0, 0, 0);
+      return;
+    }
+
+    case 7:{
+      BYTE c = val & 1;
+      val >>= 1;
+
+      BYTE z = val == 0;
+
+      cpu_write_reg8(reg, val);
+      cpu_set_flags(z, 0, 0, c);
+      return;
+    }
+  }
+}
+
 void setup_instruction_processor(){
   instruction_processor[IN_NOP] = proc_NOP;
   instruction_processor[IN_JP] = proc_JP;
@@ -276,6 +426,11 @@ void setup_instruction_processor(){
   instruction_processor[IN_SUB] = proc_SUB;
   instruction_processor[IN_ADC] = proc_ADC;
   instruction_processor[IN_SBC] = proc_SBC;
+  instruction_processor[IN_CP] = proc_CP;
+  instruction_processor[IN_AND] = proc_AND;
+  instruction_processor[IN_OR] = proc_OR;
+  instruction_processor[IN_XOR] = proc_XOR;
+  instruction_processor[IN_CB] = proc_CB;
 }
 
 IN_PROC get_instruction_processor(){
