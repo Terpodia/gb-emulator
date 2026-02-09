@@ -1,6 +1,7 @@
 #include <bus.h>
 #include <cpu.h>
 #include <emu.h>
+#include <interrupts.h>
 
 cpu_context ctx;
 
@@ -29,7 +30,10 @@ static void fetch_instruction() {
 
 static void execute() { 
   IN_PROC proc = get_instruction_processor();
-  if(!proc) std::cout << "Not executing yet " << std::hex << (int)ctx.cur_opcode << std::dec << "\n";
+  if(!proc){
+    std::cout << "Not executing yet " << std::hex << (int)ctx.cur_opcode << std::dec << "\n";
+    NO_IMPL
+  }
   else proc();
 }
 
@@ -45,6 +49,16 @@ bool cpu_step() {
               << (int)ctx.cur_opcode << ")" << std::dec << "\n";
 
     execute();
+  }
+  else {
+    emu_cycles(1);
+    if(ctx.interrupt_enable_register) ctx.halted = false;
+  }
+  if(ctx.interrupt_master_enable) cpu_handle_interrupts();
+
+  if(ctx.enabling_interrupt_master){
+    ctx.interrupt_master_enable = true;
+    ctx.enabling_interrupt_master = false;
   }
   return true;
 }

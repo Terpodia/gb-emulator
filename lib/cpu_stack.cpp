@@ -13,7 +13,8 @@ void push16(WORD value){
 }
 
 BYTE pop(){
-    return bus_read(ctx.cpu_regs.sp++);
+    ctx.cpu_regs.sp++;
+    return bus_read(ctx.cpu_regs.sp);
 }
 WORD pop16(){
     WORD lo = pop();

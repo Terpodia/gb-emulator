@@ -1,21 +1,22 @@
 #include <ram.h>
 
-static ram_context ctx;
+static ram_context ram_ctx;
 
 BYTE wram_read(WORD address){
     address -= 0xC000;
-    return ctx.wram[address];
+    return ram_ctx.wram[address];
 } 
 void wram_write(WORD address, BYTE value){
     address -= 0xC000;
-    ctx.wram[address] = value;
+    ram_ctx.wram[address] = value;
 }
 
 BYTE hram_read(WORD address){
     address -= 0xFF80;
-    return ctx.hram[address];
+    return ram_ctx.hram[address];
 }
 void hram_write(WORD address, BYTE value){
     address -= 0xFF80;
-    ctx.hram[address] = value;
+    ram_ctx.hram[address] = value;
+    std::cout << (WORD)value << "\n";
 }

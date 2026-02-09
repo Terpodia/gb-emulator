@@ -481,6 +481,19 @@ void proc_DAA(){
   cpu_set_flags(ctx.cpu_regs.a == 0, -1, 0, -1);
 }
 
+void proc_HALT(){
+  ctx.halted = true;
+  std::cout << "HALTING...\n";
+}
+
+void proc_DI(){
+  ctx.interrupt_master_enable = false;
+}
+
+void proc_EI(){
+  ctx.enabling_interrupt_master = true;
+}
+
 void setup_instruction_processor(){
   instruction_processor[IN_NOP] = proc_NOP;
   instruction_processor[IN_JP] = proc_JP;
@@ -512,6 +525,9 @@ void setup_instruction_processor(){
   instruction_processor[IN_CCF] = proc_CCF;
   instruction_processor[IN_SCF] = proc_SCF;
   instruction_processor[IN_DAA] = proc_DAA;
+  instruction_processor[IN_HALT] = proc_HALT;
+  instruction_processor[IN_DI] = proc_DI;
+  instruction_processor[IN_EI] = proc_EI;
 }
 
 IN_PROC get_instruction_processor(){

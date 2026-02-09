@@ -1,0 +1,27 @@
+#include <interrupts.h>
+#include <cpu.h>
+#include <cpu_stack.h>
+
+extern cpu_context ctx;
+
+bool int_check(BYTE interrupt_type, WORD address){
+  if(!(ctx.interrupt_enable_register & interrupt_type)) return false;
+  if(!(ctx.interrupt_flag & interrupt_type)) return false;
+
+  ctx.interrupt_flag &= ~interrupt_type;
+  ctx.interrupt_master_enable = false;
+  ctx.halted = false;
+
+  push16(ctx.cpu_regs.pc);
+  ctx.cpu_regs.pc = address;
+
+  return true;
+}
+
+void cpu_handle_interrupts(){
+  if(int_check(VBLANK, 0x40)) return;
+  if(int_check(LCD, 0x48)) return;
+  if(int_check(TIMER, 0x50)) return;
+  if(int_check(SERIAL, 0x58)) return;
+  if(int_check(JOYPAD, 0x60)) return;
+}

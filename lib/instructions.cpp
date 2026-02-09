@@ -130,6 +130,7 @@ void setup_instructions_types() {
   instructions[0x73] = {IN_LD, AM_MR_R, RT_HL, RT_E},
   instructions[0x74] = {IN_LD, AM_MR_R, RT_HL, RT_H},
   instructions[0x75] = {IN_LD, AM_MR_R, RT_HL, RT_L},
+  instructions[0x76] = {IN_HALT},
   instructions[0x77] = {IN_LD, AM_MR_R, RT_HL, RT_A},
   instructions[0x78] = {IN_LD, AM_R_R, RT_A, RT_B},
   instructions[0x79] = {IN_LD, AM_R_R, RT_A, RT_C},
@@ -254,12 +255,14 @@ void setup_instructions_types() {
   instructions[0xF0] = {IN_LDH, AM_R_A8, RT_A},
   instructions[0xF1] = {IN_POP, AM_R},
   instructions[0xF2] = {IN_LDH, AM_R_MR, RT_A, RT_C},
+  instructions[0xF3] = {IN_DI},
   instructions[0xF5] = {IN_PUSH, AM_R},
   instructions[0xF6] = {IN_OR, AM_R_D8, RT_A},
   instructions[0xF7] = {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE, 0x30},
   instructions[0xF8] = {IN_LD, AM_HL_SPR, RT_HL, RT_SP},
   instructions[0xF9] = {IN_LD, AM_R_R, RT_SP, RT_HL},
   instructions[0xFA] = {IN_LD, AM_R_A16, RT_A},
+  instructions[0xFB] = {IN_EI},
   instructions[0xFE] = {IN_CP, AM_R_D8, RT_A},
   instructions[0xFF] = {IN_RST, AM_IMP, RT_NONE, RT_NONE, CT_NONE, 0x38};
 }

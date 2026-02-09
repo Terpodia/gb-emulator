@@ -85,8 +85,11 @@ void cpu_write_reg(register_type reg_type, WORD value) {
 
     case RT_SP:
       ctx.cpu_regs.sp = value;
+      break;
+
     case RT_PC:
       ctx.cpu_regs.pc = value;
+      break;
   }
 }
 
@@ -146,4 +149,11 @@ void cpu_write_reg8(register_type reg_type, BYTE value) {
       return bus_write(reverse(*((WORD *)&ctx.cpu_regs.h)), value);
       break;
   }
+}
+
+BYTE cpu_read_interrupt_enable_register(){ 
+  return ctx.interrupt_enable_register; 
+}
+void cpu_write_interrupt_enable_register(BYTE value){
+  ctx.interrupt_enable_register = value;
 }

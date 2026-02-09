@@ -1,5 +1,6 @@
 #include <bus.h>
 #include <ram.h>
+#include <cpu.h>
 #include <cartridge/cart.h>
 
 BYTE bus_read(WORD address) {
@@ -10,7 +11,9 @@ BYTE bus_read(WORD address) {
   else if(address <= 0x9FFF){
     // VRAM
     std::cout << "VRAM Not supported yet\n";
-    return 0; 
+    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
+    //NO_IMPL
+    return 0;
   }
   else if(address <= 0xBFFF){
     // External RAM (Cartridge RAM)
@@ -18,8 +21,7 @@ BYTE bus_read(WORD address) {
   }
   else if(address <= 0xDFFF){
     // WRAM
-    wram_read(address); 
-    return 0;
+    return wram_read(address); 
   }
   else if(address <= 0xFDFF){
     // Echo RAM - Use of this area is prohibited
@@ -28,6 +30,8 @@ BYTE bus_read(WORD address) {
   else if(address <= 0xFE9F){
     // OAM
     std::cout << "OAM Not supported yet\n";
+    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
+    // NO_IMPL
     return 0;
   }
   else if(address <= 0xFEFF){
@@ -37,6 +41,7 @@ BYTE bus_read(WORD address) {
   else if(address <= 0xFF7F){
     // I/O Registers
     std::cout << "I/O Register Not suported yet\n";
+    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
     return 0;
   }
   else if(address <= 0xFFFE){
@@ -46,8 +51,7 @@ BYTE bus_read(WORD address) {
   }
   else if(address <= 0xFFFF){
     // Interrupt Enable register
-    std::cout << "Interrupt Enable Register Not suported yet\n";
-    return 0;
+    return cpu_read_interrupt_enable_register();
   }
   return 0;
 }
@@ -60,6 +64,8 @@ void bus_write(WORD address, BYTE value) {
   else if(address <= 0x9FFF){
     // VRAM
     std::cout << "VRAM Not supported yet\n";
+    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
+    //NO_IMPL
   }
   else if(address <= 0xBFFF){
     // External RAM (Cartridge RAM)
@@ -67,7 +73,7 @@ void bus_write(WORD address, BYTE value) {
   }
   else if(address <= 0xDFFF){
     // WRAM
-    wram_write(address, value); 
+    wram_write(address, value);
   }
   else if(address <= 0xFDFF){
     // Echo RAM - Use of this area is prohibited
@@ -75,6 +81,8 @@ void bus_write(WORD address, BYTE value) {
   else if(address <= 0xFE9F){
     // OAM
     std::cout << "OAM Not supported yet\n";
+    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
+    //NO_IMPL
   }
   else if(address <= 0xFEFF){
     // Not usable
@@ -82,6 +90,8 @@ void bus_write(WORD address, BYTE value) {
   else if(address <= 0xFF7F){
     // I/O Registers
     std::cout << "I/O Register Not suported yet\n";
+    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
+    //NO_IMPL
   }
   else if(address <= 0xFFFE){
     // High RAM (HRAM)
@@ -89,7 +99,7 @@ void bus_write(WORD address, BYTE value) {
   }
   else if(address <= 0xFFFF){
     // Interrupt Enable register
-    std::cout << "Interrupt Enable Register Not suported yet\n";
+    cpu_write_interrupt_enable_register(value);
   }
 }
 

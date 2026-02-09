@@ -24,7 +24,11 @@ struct cpu_context {
   BYTE cur_opcode;
   instruction *current_instruction;
 
+  BYTE interrupt_enable_register;
+  BYTE interrupt_flag;
+
   bool interrupt_master_enable;
+  bool enabling_interrupt_master;
   bool destination_is_memory;
   bool halted;
   bool stepping;
@@ -50,3 +54,6 @@ void cpu_write_reg(register_type reg_type, WORD value);
 
 BYTE cpu_read_reg8(register_type reg_type);
 void cpu_write_reg8(register_type reg_type, BYTE value);
+
+BYTE cpu_read_interrupt_enable_register();
+void cpu_write_interrupt_enable_register(BYTE value);
