@@ -33,7 +33,7 @@ bool fetch_data() {
       WORD address = cpu_read_reg(ctx.current_instruction->reg_1);
       if(ctx.current_instruction->reg_1 == RT_C) address += 0xFF00;
 
-      ctx.fetched_data = ctx.current_instruction->reg_2;
+      ctx.fetched_data = cpu_read_reg(ctx.current_instruction->reg_2);
 
       ctx.memory_destination = address;
       ctx.destination_is_memory = true;
@@ -81,7 +81,7 @@ bool fetch_data() {
     case AM_HLI_R:{
       WORD address = cpu_read_reg(ctx.current_instruction->reg_1);
 
-      ctx.fetched_data = ctx.current_instruction->reg_2;
+      ctx.fetched_data = cpu_read_reg(ctx.current_instruction->reg_2);
       ctx.memory_destination = address;
       ctx.destination_is_memory = true;
 
@@ -93,7 +93,7 @@ bool fetch_data() {
     case AM_HLD_R:{
       WORD address = cpu_read_reg(ctx.current_instruction->reg_1);
 
-      ctx.fetched_data = ctx.current_instruction->reg_2;
+      ctx.fetched_data = cpu_read_reg(ctx.current_instruction->reg_2);
       ctx.memory_destination = address;
       ctx.destination_is_memory = true;
 
@@ -117,7 +117,7 @@ bool fetch_data() {
       emu_cycles(1);
       address |= 0xFF00;
 
-      ctx.fetched_data = ctx.current_instruction->reg_2;
+      ctx.fetched_data = cpu_read_reg(ctx.current_instruction->reg_2);
       ctx.memory_destination = address;
       ctx.destination_is_memory = true;
 

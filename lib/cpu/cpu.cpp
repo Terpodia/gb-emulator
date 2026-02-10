@@ -1,7 +1,9 @@
 #include <bus.h>
 #include <cpu.h>
+#include <dbg.h>
 #include <emu.h>
 #include <interrupts.h>
+#include <iomanip>
 
 cpu_context ctx;
 
@@ -16,6 +18,9 @@ void cpu_init() {
   *((WORD *)&ctx.cpu_regs.h) = 0x4D01;
 
   ctx.interrupt_master_enable = false;
+  ctx.enabling_interrupt_master = false;
+  ctx.interrupt_enable_register = 0;
+  ctx.interrupt_flag = 0;
 }
 
 static void fetch_instruction() {
@@ -25,6 +30,7 @@ static void fetch_instruction() {
     std::cout << "Unknown Instruction: " << std::hex << "("
               << (int)ctx.cur_opcode << ")" << std::dec << "\n";
     ctx.current_instruction = nullptr;
+    NO_IMPL
   }
 }
 
@@ -37,17 +43,32 @@ static void execute() {
   else proc();
 }
 
+void cpu_log(){
+  WORD pc = ctx.cpu_regs.pc;
+  std::cout << std::setfill('0') << std::hex;
+  std::cout << "A:" << std::setw(2) << (int)ctx.cpu_regs.a << " "
+            << "F:" << std::setw(2) << (int)ctx.cpu_regs.f << " "
+            << "B:" << std::setw(2) << (int)ctx.cpu_regs.b << " "
+            << "C:" << std::setw(2) << (int)ctx.cpu_regs.c << " "
+            << "D:" << std::setw(2) << (int)ctx.cpu_regs.d << " "
+            << "E:" << std::setw(2) << (int)ctx.cpu_regs.e << " "
+            << "H:" << std::setw(2) << (int)ctx.cpu_regs.h << " "
+            << "L:" << std::setw(2) << (int)ctx.cpu_regs.l << " "
+            << "SP:" << std::setw(4) << (int)ctx.cpu_regs.sp << " "
+            << "PC:" << std::setw(4) << (int)pc << " "
+            << "PCMEM:" << std::setw(2) << (int)bus_read(pc) << ","
+            << std::setw(2) << (int)bus_read(pc+1) << ","
+            << std::setw(2) << (int)bus_read(pc+2) << ","
+            << std::setw(2) << (int)bus_read(pc+3) << "\n";
+  dbg_update();
+  dbg_print();
+}
+
 bool cpu_step() {
   if (!ctx.halted) {
-    WORD pc = ctx.cpu_regs.pc;
-
+    cpu_log();
     fetch_instruction();
     if (!fetch_data()) return false;
-
-    std::cout << "Executing CPU step: " << std::hex << pc << " " << std::dec
-              << ctx.current_instruction->in_type << std::hex << " ("
-              << (int)ctx.cur_opcode << ")" << std::dec << "\n";
-
     execute();
   }
   else {

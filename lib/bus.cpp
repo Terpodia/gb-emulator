@@ -1,6 +1,7 @@
 #include <bus.h>
 #include <ram.h>
 #include <cpu.h>
+#include <io.h>
 #include <cartridge/cart.h>
 
 BYTE bus_read(WORD address) {
@@ -12,7 +13,7 @@ BYTE bus_read(WORD address) {
     // VRAM
     std::cout << "VRAM Not supported yet\n";
     std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
-    //NO_IMPL
+    // NO_IMPL
     return 0;
   }
   else if(address <= 0xBFFF){
@@ -40,19 +41,17 @@ BYTE bus_read(WORD address) {
   }
   else if(address <= 0xFF7F){
     // I/O Registers
-    std::cout << "I/O Register Not suported yet\n";
-    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
-    return 0;
+    return io_read(address);
   }
   else if(address <= 0xFFFE){
     // High RAM (HRAM)
-    hram_read(address); 
-    return 0;
+    return hram_read(address); 
   }
   else if(address <= 0xFFFF){
     // Interrupt Enable register
     return cpu_read_interrupt_enable_register();
   }
+  NO_IMPL
   return 0;
 }
 
@@ -65,7 +64,7 @@ void bus_write(WORD address, BYTE value) {
     // VRAM
     std::cout << "VRAM Not supported yet\n";
     std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
-    //NO_IMPL
+    // NO_IMPL
   }
   else if(address <= 0xBFFF){
     // External RAM (Cartridge RAM)
@@ -89,9 +88,7 @@ void bus_write(WORD address, BYTE value) {
   }
   else if(address <= 0xFF7F){
     // I/O Registers
-    std::cout << "I/O Register Not suported yet\n";
-    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
-    //NO_IMPL
+    io_write(address, value);
   }
   else if(address <= 0xFFFE){
     // High RAM (HRAM)
@@ -101,9 +98,12 @@ void bus_write(WORD address, BYTE value) {
     // Interrupt Enable register
     cpu_write_interrupt_enable_register(value);
   }
+  else{
+    NO_IMPL
+  }
 }
 
 void bus_write16(WORD address, WORD value) {
-  cart_write(address, value & 0xFF);
-  cart_write(address + 1, value >> 8);
+  bus_write(address, value & 0xFF);
+  bus_write(address + 1, value >> 8);
 }

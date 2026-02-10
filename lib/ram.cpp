@@ -18,5 +18,4 @@ BYTE hram_read(WORD address){
 void hram_write(WORD address, BYTE value){
     address -= 0xFF80;
     ram_ctx.hram[address] = value;
-    std::cout << (WORD)value << "\n";
 }

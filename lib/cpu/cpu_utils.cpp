@@ -112,7 +112,7 @@ BYTE cpu_read_reg8(register_type reg_type) {
     case RT_L:
       return ctx.cpu_regs.l;
     case RT_HL:
-      return bus_read(reverse(*((WORD *)&ctx.cpu_regs.h)));
+      return bus_read(cpu_read_reg(RT_HL));
 
     default:
       return 0;
@@ -146,7 +146,7 @@ void cpu_write_reg8(register_type reg_type, BYTE value) {
       ctx.cpu_regs.l = value;
       break;
     case RT_HL:
-      return bus_write(reverse(*((WORD *)&ctx.cpu_regs.h)), value);
+      bus_write(cpu_read_reg(RT_HL), value);
       break;
   }
 }
