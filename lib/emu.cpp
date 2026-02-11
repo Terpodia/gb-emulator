@@ -3,11 +3,19 @@
 #include <cartridge/cart.h>
 #include <cpu.h>
 #include <emu.h>
+#include <timer.h>
+
+static emu_context ctx;
 
 void delay(unsigned int ms) { SDL_Delay(ms); }
 
 void emu_cycles(int cpu_cycles) {
-  // TODO...
+  for(int i=0; i<cpu_cycles; i++){
+    for(int j=0; j<4; j++){
+      ctx.ticks++;
+      timer_tick();
+    }
+  }
 }
 
 int emu_run(int argc, char **argv) {

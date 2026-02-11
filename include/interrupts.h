@@ -7,3 +7,4 @@
 #define JOYPAD 16
 
 void cpu_handle_interrupts();
+void cpu_request_interrupt(BYTE interrupt_type);

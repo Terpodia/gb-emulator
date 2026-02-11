@@ -32,7 +32,7 @@ bool check_cond(){
 void proc_JP(){
   if(check_cond()){
     ctx.cpu_regs.pc = ctx.fetched_data;
-    emu_cycles(1);
+    if(ctx.current_instruction->addr_mode != AM_R) emu_cycles(1);
   }
 }
 
@@ -482,7 +482,7 @@ void proc_DAA(){
 
 void proc_HALT(){
   ctx.halted = true;
-  std::cout << "HALTING...\n";
+  //std::cout << "HALTING...\n";
 }
 
 void proc_DI(){

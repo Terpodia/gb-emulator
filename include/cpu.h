@@ -57,3 +57,6 @@ void cpu_write_reg8(register_type reg_type, BYTE value);
 
 BYTE cpu_read_interrupt_enable_register();
 void cpu_write_interrupt_enable_register(BYTE value);
+
+BYTE cpu_read_interrupt_flag();
+void cpu_write_interrupt_flag(BYTE value);

@@ -6,7 +6,7 @@ typedef struct {
   bool paused;
   bool running;
   unsigned long long ticks;
-} amu_context;
+} emu_context;
 
 int emu_run(int argc, char **argv);
 

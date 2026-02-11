@@ -3,6 +3,7 @@
 #include <dbg.h>
 #include <emu.h>
 #include <interrupts.h>
+#include <timer.h>
 #include <iomanip>
 
 cpu_context ctx;
@@ -21,6 +22,8 @@ void cpu_init() {
   ctx.enabling_interrupt_master = false;
   ctx.interrupt_enable_register = 0;
   ctx.interrupt_flag = 0;
+
+  timer_init();
 }
 
 static void fetch_instruction() {
@@ -60,6 +63,7 @@ void cpu_log(){
             << std::setw(2) << (int)bus_read(pc+1) << ","
             << std::setw(2) << (int)bus_read(pc+2) << ","
             << std::setw(2) << (int)bus_read(pc+3) << "\n";
+  std::cout << std::dec; 
   dbg_update();
   dbg_print();
 }
@@ -68,12 +72,13 @@ bool cpu_step() {
   if (!ctx.halted) {
     cpu_log();
     fetch_instruction();
+    emu_cycles(1);
     if (!fetch_data()) return false;
     execute();
   }
   else {
     emu_cycles(1);
-    if(ctx.interrupt_enable_register) ctx.halted = false;
+    if(ctx.interrupt_flag) ctx.halted = false;
   }
   if(ctx.interrupt_master_enable) cpu_handle_interrupts();
 
