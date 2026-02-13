@@ -17,7 +17,22 @@ struct oam_entry {
 struct ppu_context {
   oam_entry oam[40];
   BYTE vram[0x2000];
+
+  WORD ppu_ticks;
+  uint64_t current_frame;
 };
+
+#define OAM_MODE_TICKS 80
+#define PIXEL_TRANSFER_MODE_TICKS 172
+#define LINE_TICKS 456
+#define YRES 144
+#define SCANLINES 154
+
+ppu_context *ppu_get_context();
+
+void ppu_init();
+
+void ppu_tick();
 
 BYTE ppu_oam_read(WORD address);
 void ppu_oam_write(WORD address, BYTE value);
