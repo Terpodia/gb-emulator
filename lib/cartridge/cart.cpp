@@ -17,5 +17,5 @@ BYTE cart_read(WORD address) {
 
 void cart_write(WORD address, BYTE value) {
   // for now just ROM ONLY supported
-  std::cout << "Not implemented yet\n";
+  std::cout << "CART write not implemented yet\n";
 }

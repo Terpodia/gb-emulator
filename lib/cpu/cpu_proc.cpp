@@ -493,8 +493,13 @@ void proc_EI(){
   ctx.enabling_interrupt_master = true;
 }
 
+void proc_STOP(){
+  //std::cout << "STOPPING...\n";
+}
+
 void setup_instruction_processor(){
   instruction_processor[IN_NOP] = proc_NOP;
+  instruction_processor[IN_STOP] = proc_STOP;
   instruction_processor[IN_JP] = proc_JP;
   instruction_processor[IN_LD] = proc_LD;
   instruction_processor[IN_LDH] = proc_LDH;

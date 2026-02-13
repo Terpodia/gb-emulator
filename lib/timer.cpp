@@ -29,7 +29,7 @@ void timer_tick(){
     ctx.tima++;
     if(ctx.tima == 0){
       ctx.tima = ctx.tma;
-      cpu_request_interrupt(TIMER);
+      cpu_request_interrupt(INT_TIMER);
     }
   }
 }

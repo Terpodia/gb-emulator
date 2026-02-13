@@ -1,21 +1,39 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <cartridge/cart.h>
 #include <cpu.h>
 #include <emu.h>
+#include <ui.h>
 #include <timer.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <dma.h>
+#include <ppu.h>
 
 static emu_context ctx;
-
-void delay(unsigned int ms) { SDL_Delay(ms); }
 
 void emu_cycles(int cpu_cycles) {
   for(int i=0; i<cpu_cycles; i++){
     for(int j=0; j<4; j++){
       ctx.ticks++;
       timer_tick();
+      ppu_tick();
+    }
+    dma_tick();
+  }
+}
+
+emu_context *emu_get_context() {
+  return &ctx;
+}
+
+void *cpu_run(void *p){
+  cpu_init();
+  while (!ctx.quit){
+    if(!cpu_step()){
+      std::cout << "CPU Stopped\n";
+      return 0;
     }
   }
+  return 0;
 }
 
 int emu_run(int argc, char **argv) {
@@ -29,29 +47,23 @@ int emu_run(int argc, char **argv) {
     return -2;
   }
 
-  cpu_init();
-
-  SDL_Window *window = nullptr;
-  SDL_Surface *screenSurface = nullptr;
-  SDL_Init(SDL_INIT_VIDEO);
-  TTF_Init();
-  window =
-      SDL_CreateWindow("Gameboy Emulator", SDL_WINDOWPOS_UNDEFINED,
-                       SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
-  screenSurface = SDL_GetWindowSurface(window);
-  SDL_FillRect(screenSurface, NULL,
-               SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-  SDL_UpdateWindowSurface(window);
-  SDL_Event e;
-  bool quit = false;
-  while (quit == false) {
-    while (SDL_PollEvent(&e)) {
-      if (e.type == SDL_QUIT) quit = true;
-    }
-    if (!cpu_step()) quit = true;
+  pthread_t cpu_thread;
+  if(pthread_create(&cpu_thread, NULL, cpu_run, NULL)){
+    std::cout << "Failed to create cpu thread\n";
+    return -1;
   }
-  SDL_DestroyWindow(window);
-  SDL_Quit();
 
+  ui_init();
+  uint64_t frame = 0;
+  while (!ctx.quit) {
+    usleep(1000);
+    if(ppu_get_context()->current_frame != frame){
+      frame = ppu_get_context()->current_frame;
+      ui_update();
+    }
+    ui_handle_events();
+  }
+  ui_quit();
   return 0;
 }
+

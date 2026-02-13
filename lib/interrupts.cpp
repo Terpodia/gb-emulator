@@ -23,11 +23,11 @@ bool int_check(BYTE interrupt_type, WORD address){
 }
 
 void cpu_handle_interrupts(){
-  if(int_check(VBLANK, 0x40)) return;
-  if(int_check(LCD, 0x48)) return;
-  if(int_check(TIMER, 0x50)) return;
-  if(int_check(SERIAL, 0x58)) return;
-  if(int_check(JOYPAD, 0x60)) return;
+  if(int_check(INT_VBLANK, 0x40)) return;
+  if(int_check(INT_LCD_STAT, 0x48)) return;
+  if(int_check(INT_TIMER, 0x50)) return;
+  if(int_check(INT_SERIAL, 0x58)) return;
+  if(int_check(INT_JOYPAD, 0x60)) return;
 }
 
 void cpu_request_interrupt(BYTE interrupt_type){

@@ -2,6 +2,8 @@
 #include <ram.h>
 #include <cpu.h>
 #include <io.h>
+#include <ppu.h>
+#include <dma.h>
 #include <cartridge/cart.h>
 
 BYTE bus_read(WORD address) {
@@ -11,10 +13,7 @@ BYTE bus_read(WORD address) {
   }
   else if(address <= 0x9FFF){
     // VRAM
-    std::cout << "VRAM Not supported yet\n";
-    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
-    // NO_IMPL
-    return 0;
+    return ppu_vram_read(address);
   }
   else if(address <= 0xBFFF){
     // External RAM (Cartridge RAM)
@@ -30,10 +29,8 @@ BYTE bus_read(WORD address) {
   }
   else if(address <= 0xFE9F){
     // OAM
-    std::cout << "OAM Not supported yet\n";
-    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
-    // NO_IMPL
-    return 0;
+    if(dma_is_active()) return 0;
+    return ppu_oam_read(address);
   }
   else if(address <= 0xFEFF){
     // Not usable
@@ -62,9 +59,7 @@ void bus_write(WORD address, BYTE value) {
   }
   else if(address <= 0x9FFF){
     // VRAM
-    std::cout << "VRAM Not supported yet\n";
-    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
-    // NO_IMPL
+    ppu_vram_write(address, value);
   }
   else if(address <= 0xBFFF){
     // External RAM (Cartridge RAM)
@@ -79,9 +74,8 @@ void bus_write(WORD address, BYTE value) {
   }
   else if(address <= 0xFE9F){
     // OAM
-    std::cout << "OAM Not supported yet\n";
-    std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
-    //NO_IMPL
+    if(dma_is_active()) return;
+    ppu_oam_write(address, value);
   }
   else if(address <= 0xFEFF){
     // Not usable

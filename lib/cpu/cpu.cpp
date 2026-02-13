@@ -2,6 +2,7 @@
 #include <cpu.h>
 #include <dbg.h>
 #include <emu.h>
+#include <ppu.h>
 #include <interrupts.h>
 #include <timer.h>
 #include <iomanip>
@@ -24,6 +25,7 @@ void cpu_init() {
   ctx.interrupt_flag = 0;
 
   timer_init();
+  ppu_init();
 }
 
 static void fetch_instruction() {
@@ -70,7 +72,7 @@ void cpu_log(){
 
 bool cpu_step() {
   if (!ctx.halted) {
-    cpu_log();
+    //cpu_log();
     fetch_instruction();
     emu_cycles(1);
     if (!fetch_data()) return false;

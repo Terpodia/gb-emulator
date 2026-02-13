@@ -22,6 +22,7 @@ void setup_instructions_types() {
   instructions[0x0E] = {IN_LD, AM_R_D8, RT_C},
   instructions[0x0F] = {IN_RRCA, AM_R, RT_A},
 
+  instructions[0x10] = {IN_STOP},
   instructions[0x11] = {IN_LD, AM_R_D16, RT_DE},
   instructions[0x12] = {IN_LD, AM_MR_R, RT_DE, RT_A},
   instructions[0x13] = {IN_INC, AM_R, RT_DE},
