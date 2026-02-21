@@ -122,7 +122,8 @@ void ui_init(){
 void ui_handle_events(){
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
-    if (e.type == SDL_QUIT) emu_get_context()->quit = true;
+    if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE)
+      emu_get_context()->quit = true;
   }
 }
 
