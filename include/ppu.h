@@ -33,12 +33,12 @@ enum pixel_fifo_state {
 struct pixel_fifo_ctx {
   std::queue<uint32_t> pixel_fifo;
   pixel_fifo_state pf_state;
-  WORD lx;
-  WORD fetched_x;
-  WORD pushed_x;
-  WORD map_x;
-  WORD map_y;
-  WORD tile_y;
+  BYTE lx;
+  BYTE fetched_x;
+  BYTE pushed_x;
+  BYTE map_x;
+  BYTE map_y;
+  BYTE tile_y;
   BYTE bgw_fetched_data[3];
 };
 

@@ -24,6 +24,7 @@ bool pixel_fifo_add(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   if(pfc->pixel_fifo.size() > 8) return false;
 
+  int xx = ppu_get_context()->pfc.fetched_x - (8 - (lcd_get_context()->scx % 8));
   for(int x = 7; x >= 0; x--){
     BYTE lo = BIT(pfc->bgw_fetched_data[1], x);
     BYTE hi = BIT(pfc->bgw_fetched_data[2], x);
