@@ -1,6 +1,7 @@
 #include <ppu.h>
 #include <ppu_sm.h>
 #include <lcd.h>
+#include <cstring>
 
 static ppu_context ctx;
 
@@ -12,6 +13,7 @@ void ppu_init(){
   lcd_init();
   SET_LCD_MODE(MODE_OAM);
   ctx.ppu_ticks = 0;
+  memset(ctx.video_buffer, 0, sizeof(ctx.video_buffer));
 }
 
 void ppu_tick(){

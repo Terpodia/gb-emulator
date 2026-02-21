@@ -1,13 +1,14 @@
+#include <pixel_fifo.h>
+#include <interrupts.h>
 #include <ppu_sm.h>
+#include <lcd.h>
 #include <ppu.h>
 #include <ui.h>
-#include <lcd.h>
-#include <interrupts.h>
 
-uint32_t prev_frame_time;
-uint32_t target_frame_time = 1000/60;
-uint32_t frame_count;
-uint32_t start_timer;
+uint64_t prev_frame_time;
+uint64_t target_frame_time = 1000/60;
+uint64_t frame_count;
+uint64_t start_timer;
 
 void increment_ly(){
   lcd_get_context()->ly++;
@@ -22,13 +23,27 @@ void increment_ly(){
 
 void ppu_mode_oam(){
   if(ppu_get_context()->ppu_ticks >= OAM_MODE_TICKS){
+    ppu_get_context()->pfc.pushed_x = 0;
+    ppu_get_context()->pfc.fetched_x = 0;
+    ppu_get_context()->pfc.lx = 0;
+    ppu_get_context()->pfc.pf_state = PFS_GET_TILE;
+
+    while(!ppu_get_context()->pfc.pixel_fifo.empty())
+      ppu_get_context()->pfc.pixel_fifo.pop();
+
     SET_LCD_MODE(MODE_PIXEL_TRANSFER);
     ppu_get_context()->ppu_ticks = 0;
   }
 }
 void ppu_mode_pixel_transfer(){
-  if(ppu_get_context()->ppu_ticks >= PIXEL_TRANSFER_MODE_TICKS){
+  pixel_fifo_process();
+
+  if(ppu_get_context()->pfc.pushed_x >= XRES){
     SET_LCD_MODE(MODE_HBLANK);
+
+    if(LCDS_STAT_INT(STAT_INT_MODE_HBLANK))
+      cpu_request_interrupt(INT_LCD_STAT);
+    
     ppu_get_context()->ppu_ticks = 0;
   }
 }
@@ -42,11 +57,15 @@ void ppu_mode_hblank(){
       if(LCDS_STAT_INT(STAT_INT_MODE_VBLANK))
         cpu_request_interrupt(INT_LCD_STAT);
 
-      WORD current_frame_time = get_ticks();
+      uint64_t current_frame_time = get_ticks();
+
       if(current_frame_time - prev_frame_time < target_frame_time){
-        delay(target_frame_time - (current_frame_time - prev_frame_time));
+        uint64_t delta = target_frame_time - (current_frame_time - prev_frame_time);
+        delay(delta);
+        prev_frame_time = current_frame_time + delta;
       }
-      prev_frame_time = get_ticks();
+      else prev_frame_time = current_frame_time;
+
       frame_count++;
       ppu_get_context()->current_frame++;
 

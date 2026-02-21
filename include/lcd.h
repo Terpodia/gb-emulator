@@ -43,6 +43,12 @@ lcd_context *lcd_get_context();
 
 #define LCDS_STAT_INT(mode) (lcd_get_context()->lcds & mode)
 
+#define BG_TILE_MAP_AREA (BIT(lcd_get_context()->lcdc, 3) ? 0x9C00 : 0x9800)
+
+#define BGW_TILE_DATA_AREA (BIT(lcd_get_context()->lcdc, 4) ? 0x8000 : 0x8800)
+
+#define BGW_ENABLE (BIT(lcd_get_context()->lcdc, 0))
+
 void lcd_init();
 
 BYTE lcd_read(WORD address);
