@@ -49,6 +49,10 @@ lcd_context *lcd_get_context();
 
 #define BGW_ENABLE (BIT(lcd_get_context()->lcdc, 0))
 
+#define OBJ_ENABLE (BIT(lcd_get_context()->lcdc, 1))
+
+#define LCDS_OBJ_SIZE (BIT(lcd_get_context()->lcdc, 2) ? 16 : 8)
+
 void lcd_init();
 
 BYTE lcd_read(WORD address);

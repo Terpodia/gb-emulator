@@ -1,5 +1,6 @@
 #include <pixel_fifo.h>
 #include <interrupts.h>
+#include <algorithm>
 #include <ppu_sm.h>
 #include <lcd.h>
 #include <ppu.h>
@@ -21,6 +22,26 @@ void increment_ly(){
   }
 }
 
+void load_line_sprites(){
+  std::vector<oam_entry> &line_sprites = ppu_get_context()->line_sprites;
+  line_sprites.clear();
+
+  for(int i = 0; i < 40; i++){
+    // at most 10 sprites per line
+    if(line_sprites.size() >= 10) break;
+
+    BYTE height = LCDS_OBJ_SIZE;
+    BYTE ypos = ppu_get_context()->oam[i].y - 16;
+    if(ypos > lcd_get_context()->ly) continue;
+    if(ypos + height <= lcd_get_context()->ly) continue;
+
+    line_sprites.push_back(ppu_get_context()->oam[i]);
+  }
+  std::stable_sort(line_sprites.begin(), line_sprites.end(), [](const oam_entry &a, const oam_entry &b){
+    return a.x < b.y;
+  });
+}
+
 void ppu_mode_oam(){
   if(ppu_get_context()->ppu_ticks >= OAM_MODE_TICKS){
     ppu_get_context()->pfc.pushed_x = 0;
@@ -34,6 +55,8 @@ void ppu_mode_oam(){
     SET_LCD_MODE(MODE_PIXEL_TRANSFER);
     ppu_get_context()->ppu_ticks = 0;
   }
+  if(ppu_get_context()->ppu_ticks == 1) load_line_sprites();
+  
 }
 void ppu_mode_pixel_transfer(){
   pixel_fifo_process();

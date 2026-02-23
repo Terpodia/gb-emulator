@@ -2,6 +2,7 @@
 
 #include <common.h>
 #include <queue>
+#include <vector>
 
 #define OAM_MODE_TICKS 80
 #define PIXEL_TRANSFER_MODE_TICKS 172
@@ -9,6 +10,7 @@
 #define XRES 160
 #define YRES 144
 #define SCANLINES 154
+#define MAX_CHECKING_SPRITES_ON_PIXEL 3
 
 struct oam_entry {
   BYTE y;
@@ -39,7 +41,9 @@ struct pixel_fifo_ctx {
   BYTE map_x;
   BYTE map_y;
   BYTE tile_y;
+
   BYTE bgw_fetched_data[3];
+  BYTE obj_fetched_data[MAX_CHECKING_SPRITES_ON_PIXEL * 2];
 };
 
 struct ppu_context {
@@ -48,6 +52,10 @@ struct ppu_context {
 
   uint32_t video_buffer[YRES][XRES];
   pixel_fifo_ctx pfc;
+
+  std::vector<oam_entry> line_sprites;
+  BYTE fetched_objects;
+  oam_entry obj_fetched_entry[MAX_CHECKING_SPRITES_ON_PIXEL];
 
   WORD ppu_ticks;
   uint64_t current_frame;
