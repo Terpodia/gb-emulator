@@ -48,6 +48,7 @@ int emu_run(int argc, char **argv) {
   }
 
   initialize_banking();
+  if(has_battery()) battery_load();
 
   pthread_t cpu_thread;
   if(pthread_create(&cpu_thread, NULL, cpu_run, NULL)){

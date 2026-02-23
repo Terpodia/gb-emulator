@@ -8,6 +8,9 @@ static cart_context ctx;
 bool is_mcb1(){
   return ctx.header->type >= 1 && ctx.header->type <= 3;
 }
+bool has_battery(){
+  return ctx.header->type == 0x3;
+}
 
 void initialize_banking(){
   if(!is_mcb1()) return;
@@ -26,6 +29,24 @@ void initialize_banking(){
   ctx.current_rom_bank = ctx.rom_data + 0x4000;
   ctx.current_ram_bank = ctx.ram_bank[0];
   ctx.ram_bank_value = 0;
+}
+
+void save_battery(){
+  char filename[1024];
+  snprintf(filename, sizeof(ctx.filename), "%s.battery", ctx.filename);
+  FILE *fp = fopen(filename, "wb");
+  fwrite(ctx.current_ram_bank, 0x2000, 1, fp);
+  fclose(fp);
+}
+
+void battery_load(){
+  char filename[1024];
+  snprintf(filename, sizeof(ctx.filename), "%s.battery", ctx.filename);
+  FILE *fp = fopen(filename, "rb");
+  if(!fp) return;
+
+  fread(ctx.current_ram_bank, 0x2000, 1, fp);
+  fclose(fp);
 }
 
 bool cart_load(char *cart_path) {
@@ -73,7 +94,8 @@ void cart_write(WORD address, BYTE value) {
   }
 
   else if(address >= 0xA000 && address <= 0xBFFF){
-    if(ctx.ram_enabled)
-      ctx.current_ram_bank[address - 0xA000] = value;
+    if(!ctx.ram_enabled) return;
+    ctx.current_ram_bank[address - 0xA000] = value;
+    if(has_battery()) save_battery();
   }
 }

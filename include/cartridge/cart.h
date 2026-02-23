@@ -37,6 +37,10 @@ struct cart_context {
 
 void initialize_banking();
 
+bool has_battery();
+
+void battery_load();
+
 bool cart_load(char *cart);
 
 BYTE cart_read(WORD address);
