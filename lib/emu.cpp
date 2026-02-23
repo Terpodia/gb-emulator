@@ -47,6 +47,8 @@ int emu_run(int argc, char **argv) {
     return -2;
   }
 
+  initialize_banking();
+
   pthread_t cpu_thread;
   if(pthread_create(&cpu_thread, NULL, cpu_run, NULL)){
     std::cout << "Failed to create cpu thread\n";

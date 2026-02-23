@@ -23,7 +23,19 @@ struct cart_context {
   unsigned int rom_size;
   BYTE *rom_data;
   rom_header *header;
+
+  BYTE *ram_bank[16];
+
+  BYTE *current_rom_bank;
+  BYTE *current_ram_bank;
+
+  BYTE ram_bank_value;
+
+  bool ram_enabled;
+  bool bank_mode;
 };
+
+void initialize_banking();
 
 bool cart_load(char *cart);
 

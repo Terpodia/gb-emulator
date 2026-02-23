@@ -6,7 +6,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-const int SCALE = 4;
+const int SCALE = 6;
 const int TILE_WIDTH = 8;
 const int TILE_HEIGHT = 8;
 const int TILE_SIZE = 16;
