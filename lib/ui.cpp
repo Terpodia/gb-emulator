@@ -2,7 +2,7 @@
 #include <emu.h>
 #include <bus.h>
 #include <ppu.h>
-#include <chrono>
+#include <joypad.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -119,11 +119,27 @@ void ui_init(){
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
+void ui_handle_key(BYTE keycode, bool pressed){
+  switch(keycode){
+    case SDLK_z: joypad_get_context()->state.a = pressed; break;
+    case SDLK_x: joypad_get_context()->state.b = pressed; break;
+    case SDLK_w: joypad_get_context()->state.up = pressed; break;
+    case SDLK_a: joypad_get_context()->state.left = pressed; break;
+    case SDLK_s: joypad_get_context()->state.down = pressed; break;
+    case SDLK_d: joypad_get_context()->state.right = pressed; break;
+    case SDLK_TAB: joypad_get_context()->state.start = pressed; break;
+    case SDLK_RETURN: joypad_get_context()->state.select = pressed; break;
+  }
+}
+
 void ui_handle_events(){
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
     if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE)
       emu_get_context()->quit = true;
+
+    if(e.type == SDL_KEYDOWN) ui_handle_key(e.key.keysym.sym, true);
+    if(e.type == SDL_KEYUP) ui_handle_key(e.key.keysym.sym, false);
   }
 }
 
