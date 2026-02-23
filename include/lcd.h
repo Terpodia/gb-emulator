@@ -43,6 +43,8 @@ lcd_context *lcd_get_context();
 
 #define LCDS_STAT_INT(mode) (lcd_get_context()->lcds & mode)
 
+#define WIN_TILE_MAP_AREA (BIT(lcd_get_context()->lcdc, 6) ? 0x9C00 : 0x9800)
+
 #define BG_TILE_MAP_AREA (BIT(lcd_get_context()->lcdc, 3) ? 0x9C00 : 0x9800)
 
 #define BGW_TILE_DATA_AREA (BIT(lcd_get_context()->lcdc, 4) ? 0x8000 : 0x8800)
@@ -50,6 +52,8 @@ lcd_context *lcd_get_context();
 #define BGW_ENABLE (BIT(lcd_get_context()->lcdc, 0))
 
 #define OBJ_ENABLE (BIT(lcd_get_context()->lcdc, 1))
+
+#define WIN_ENABLE (BIT(lcd_get_context()->lcdc, 5))
 
 #define LCDS_OBJ_SIZE (BIT(lcd_get_context()->lcdc, 2) ? 16 : 8)
 

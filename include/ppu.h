@@ -59,6 +59,8 @@ struct ppu_context {
 
   WORD ppu_ticks;
   uint64_t current_frame;
+
+  BYTE window_line;
 };
 
 ppu_context *ppu_get_context();

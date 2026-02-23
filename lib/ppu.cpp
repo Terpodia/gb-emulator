@@ -13,7 +13,12 @@ void ppu_init(){
   lcd_init();
   SET_LCD_MODE(MODE_OAM);
   ctx.ppu_ticks = 0;
+  ctx.current_frame = 0;
+  ctx.window_line = 0;
+
   memset(ctx.video_buffer, 0, sizeof(ctx.video_buffer));
+  memset(ctx.oam, 0, sizeof(ctx.oam));
+  memset(ctx.vram, 0, sizeof(ctx.vram));
 }
 
 void ppu_tick(){

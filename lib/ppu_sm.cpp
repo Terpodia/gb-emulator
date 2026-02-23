@@ -12,6 +12,9 @@ uint64_t frame_count;
 uint64_t start_timer;
 
 void increment_ly(){
+  if(window_is_visible() && lcd_get_context()->ly >= lcd_get_context()->wy){
+    ppu_get_context()->window_line++;
+  }
   lcd_get_context()->ly++;
   if(lcd_get_context()->ly == lcd_get_context()->lyc){
     if(LCDS_STAT_INT(STAT_INT_MODE_LYC)) cpu_request_interrupt(INT_LCD_STAT);
@@ -113,6 +116,7 @@ void ppu_mode_vblank(){
     if(lcd_get_context()->ly >= SCANLINES){
       SET_LCD_MODE(MODE_OAM);
       lcd_get_context()->ly = 0;
+      ppu_get_context()->window_line = 0;
     }
 
     ppu_get_context()->ppu_ticks = 0;

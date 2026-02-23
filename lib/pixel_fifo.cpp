@@ -3,6 +3,10 @@
 #include <lcd.h>
 #include <bus.h>
 
+bool window_is_visible(){
+  return lcd_get_context()->wx < XRES + 7 && lcd_get_context()->wy < YRES && WIN_ENABLE;
+}
+
 void transfer_pixels(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   if(pfc->pixel_fifo.size() > 8){
@@ -111,6 +115,22 @@ void fetch_sprites_color(BYTE offset){
   }
 }
 
+void fetch_window_tile(){
+  if(!window_is_visible()) return;
+
+  pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
+
+  if(pfc->fetched_x + 7 < lcd_get_context()->wx) return;
+  if(lcd_get_context()->ly < lcd_get_context()->wy) return;
+
+  WORD address = WIN_TILE_MAP_AREA;
+  address += (pfc->fetched_x + 7 - lcd_get_context()->wx) / 8;
+  address += (ppu_get_context()->window_line / 8) * 32;
+
+  pfc->bgw_fetched_data[0] = bus_read(address);
+  if(BGW_TILE_DATA_AREA == 0x8800) pfc->bgw_fetched_data[0] += 128;
+}
+
 void pixel_fifo_fetch(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   switch(pfc->pf_state){
@@ -121,6 +141,7 @@ void pixel_fifo_fetch(){
       pfc->bgw_fetched_data[0] = bus_read(address);
       if(BGW_TILE_DATA_AREA == 0x8800) pfc->bgw_fetched_data[0] += 128;
 
+      fetch_window_tile();
       fetch_sprites_entry();
 
       pfc->pf_state = PFS_GET_TILE_DATA_LOW;
