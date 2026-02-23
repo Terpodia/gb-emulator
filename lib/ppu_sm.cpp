@@ -55,8 +55,10 @@ void ppu_mode_oam(){
     SET_LCD_MODE(MODE_PIXEL_TRANSFER);
     ppu_get_context()->ppu_ticks = 0;
   }
-  if(ppu_get_context()->ppu_ticks == 1) load_line_sprites();
-  
+  if(ppu_get_context()->ppu_ticks == 1){
+    if(LCDS_STAT_INT(STAT_INT_MODE_OAM)) cpu_request_interrupt(INT_LCD_STAT);
+    load_line_sprites();
+  }
 }
 void ppu_mode_pixel_transfer(){
   pixel_fifo_process();

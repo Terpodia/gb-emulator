@@ -10,7 +10,7 @@ static dma_context ctx;
 void dma_start(WORD address){
   ctx.start_address = address << 8;
   ctx.address_offset = 0;
-  ctx.start_delay = 0;
+  ctx.start_delay = 2;
   ctx.active = true;
 }
 
