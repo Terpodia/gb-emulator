@@ -9,7 +9,6 @@
 const int SCALE = 6;
 const int TILE_WIDTH = 8;
 const int TILE_HEIGHT = 8;
-const int TILE_SIZE = 16;
 
 const int SCREEN_WIDTH = 160 * SCALE;
 const int SCREEN_HEIGHT = 144 * SCALE;

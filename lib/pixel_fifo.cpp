@@ -13,18 +13,15 @@ void transfer_pixels(){
     uint32_t color = pfc->pixel_fifo.front();
     pfc->pixel_fifo.pop();
 
-    if(pfc->lx >= (pfc->map_x) % 8){
-      BYTE y = lcd_get_context()->ly;
-      BYTE x = pfc->pushed_x;
+    BYTE y = lcd_get_context()->ly;
+    BYTE x = pfc->pushed_x;
 
-      ppu_get_context()->video_buffer[y][x] = color;
-      pfc->pushed_x++;
-    }
-    pfc->lx++;
+    ppu_get_context()->video_buffer[y][x] = color;
+    pfc->pushed_x++;
   }
 }
 
-void pixel_sprite_color(BYTE color, uint32_t &palette){
+bool pixel_sprite_color(BYTE color, uint32_t &palette){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   for(int i = 0; i < ppu_get_context()->fetched_objects; i++){
     oam_entry entry = ppu_get_context()->obj_fetched_entry[i];
@@ -49,8 +46,9 @@ void pixel_sprite_color(BYTE color, uint32_t &palette){
     if(!entry.dmg_palette) palette = lcd_get_context()->sp1_colors[sprite_color];
     else palette = lcd_get_context()->sp2_colors[sprite_color];
 
-    break;
+    return true;
   }
+  return false;
 }
 
 bool pixel_fifo_add(){
@@ -63,14 +61,17 @@ bool pixel_fifo_add(){
     BYTE color = (hi << 1) | lo;
 
     if(!BGW_ENABLE) color = 0;
+    if(pfc->lx < lcd_get_context()->scx % 8 && !pfc->bgw_fetched_is_window) color = 0;
 
     uint32_t palette = lcd_get_context()->bg_colors[color];
 
-    if(OBJ_ENABLE) pixel_sprite_color(color, palette);
+    if(OBJ_ENABLE && pixel_sprite_color(color, palette))
+      pfc->pixel_fifo.push(palette), pfc->fetched_x++;
 
-    pfc->pixel_fifo.push(palette);
+    else if(pfc->lx >= lcd_get_context()->scx % 8 || pfc->bgw_fetched_is_window)
+      pfc->pixel_fifo.push(palette), pfc->fetched_x++;
 
-    pfc->fetched_x++;
+    pfc->lx++;
   }
   return true;
 }
@@ -129,12 +130,15 @@ void fetch_window_tile(){
 
   pfc->bgw_fetched_data[0] = bus_read(address);
   if(BGW_TILE_DATA_AREA == 0x8800) pfc->bgw_fetched_data[0] += 128;
+
+  pfc->bgw_fetched_is_window = true;
 }
 
 void pixel_fifo_fetch(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   switch(pfc->pf_state){
     case PFS_GET_TILE:{
+      pfc->bgw_fetched_is_window = false;
       WORD address = BG_TILE_MAP_AREA;
       address += pfc->map_x / 8;
       address += (pfc->map_y / 8) * 32;
@@ -184,8 +188,12 @@ void pixel_fifo_fetch(){
 void pixel_fifo_process(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   pfc->map_y = lcd_get_context()->ly + lcd_get_context()->scy;
-  pfc->map_x = pfc->fetched_x + lcd_get_context()->scx;
+  pfc->map_x = pfc->lx + lcd_get_context()->scx;
+
   pfc->tile_y = ((lcd_get_context()->ly + lcd_get_context()->scy) % 8) * 2;
+
+  if(pfc->bgw_fetched_is_window)
+    pfc->tile_y = (ppu_get_context()->window_line % 8) * 2;
 
   if(!(ppu_get_context()->ppu_ticks & 1)){
     pixel_fifo_fetch();

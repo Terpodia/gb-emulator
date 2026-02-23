@@ -44,6 +44,8 @@ struct pixel_fifo_ctx {
 
   BYTE bgw_fetched_data[3];
   BYTE obj_fetched_data[MAX_CHECKING_SPRITES_ON_PIXEL * 2];
+
+  bool bgw_fetched_is_window;
 };
 
 struct ppu_context {
