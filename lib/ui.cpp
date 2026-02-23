@@ -66,8 +66,8 @@ void ui_init(){
 
 void ui_handle_key(BYTE keycode, bool pressed){
   switch(keycode){
-    case SDLK_z: joypad_get_context()->state.a = pressed; break;
-    case SDLK_x: joypad_get_context()->state.b = pressed; break;
+    case SDLK_j: joypad_get_context()->state.a = pressed; break;
+    case SDLK_k: joypad_get_context()->state.b = pressed; break;
     case SDLK_w: joypad_get_context()->state.up = pressed; break;
     case SDLK_a: joypad_get_context()->state.left = pressed; break;
     case SDLK_s: joypad_get_context()->state.down = pressed; break;

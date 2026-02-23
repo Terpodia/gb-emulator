@@ -34,14 +34,14 @@ void load_line_sprites(){
     if(line_sprites.size() >= 10) break;
 
     BYTE height = LCDS_OBJ_SIZE;
-    BYTE ypos = ppu_get_context()->oam[i].y - 16;
-    if(ypos > lcd_get_context()->ly) continue;
-    if(ypos + height <= lcd_get_context()->ly) continue;
+    BYTE ypos = ppu_get_context()->oam[i].y;
+    if(ypos > lcd_get_context()->ly + 16) continue;
+    if(ypos + height <= lcd_get_context()->ly + 16) continue;
 
     line_sprites.push_back(ppu_get_context()->oam[i]);
   }
   std::stable_sort(line_sprites.begin(), line_sprites.end(), [](const oam_entry &a, const oam_entry &b){
-    return a.x < b.y;
+    return a.x < b.x;
   });
 }
 

@@ -25,13 +25,13 @@ bool pixel_sprite_color(BYTE color, uint32_t &palette){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   for(int i = 0; i < ppu_get_context()->fetched_objects; i++){
     oam_entry entry = ppu_get_context()->obj_fetched_entry[i];
-    BYTE xpos = entry.x - 8;
+    BYTE xpos = entry.x;
 
-    if(pfc->fetched_x < xpos) continue;
+    if(pfc->fetched_x + 8 < xpos) continue;
 
-    if(pfc->fetched_x >= xpos + 8) continue;
+    if(pfc->fetched_x + 8 >= xpos + 8) continue;
 
-    BYTE bit = 7 - (pfc->fetched_x - xpos);
+    BYTE bit = 7 - (pfc->fetched_x + 8 - xpos);
 
     if(entry.x_flip) bit = 7 - bit;
 
@@ -86,10 +86,10 @@ void fetch_sprites_entry(){
     // out of bonds, not visible
     if(entry.x == 0 || entry.x >= 168) continue;
 
-    BYTE xpos = entry.x - 8;
+    BYTE xpos = entry.x;
 
-    if(xpos >= pfc->fetched_x + 8) continue;
-    if(xpos + 8 <= pfc->fetched_x) continue;
+    if(xpos >= pfc->fetched_x + 8 + 8) continue;
+    if(xpos + 8 <= pfc->fetched_x + 8) continue;
 
     ppu_get_context()->obj_fetched_entry[ppu_get_context()->fetched_objects++] = entry;
   }
