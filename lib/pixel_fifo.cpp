@@ -55,7 +55,11 @@ bool pixel_fifo_add(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   if(pfc->pixel_fifo.size() > 8) return false;
 
-  for(int x = 7; x >= 0; x--){
+  int first_bit = 7;
+  if(!pfc->bgw_fetched_is_window && pfc->lx < lcd_get_context()->scx % 8)
+    first_bit -= (lcd_get_context()->scx % 8) - pfc->lx, pfc->lx = lcd_get_context()->scx % 8;
+
+  for(int x = first_bit; x >= 0; x--){
     BYTE lo = BIT(pfc->bgw_fetched_data[1], x);
     BYTE hi = BIT(pfc->bgw_fetched_data[2], x);
     BYTE color = (hi << 1) | lo;
@@ -141,7 +145,7 @@ void pixel_fifo_fetch(){
       pfc->bgw_fetched_is_window = false;
       WORD address = BG_TILE_MAP_AREA;
       address += pfc->map_x / 8;
-      address += (pfc->map_y / 8) * 32;
+      address += ((WORD)pfc->map_y / 8) * 32;
       pfc->bgw_fetched_data[0] = bus_read(address);
       if(BGW_TILE_DATA_AREA == 0x8800) pfc->bgw_fetched_data[0] += 128;
 
@@ -155,7 +159,7 @@ void pixel_fifo_fetch(){
 
     case PFS_GET_TILE_DATA_LOW:{
       WORD address = BGW_TILE_DATA_AREA;
-      address += pfc->bgw_fetched_data[0] * 16 + pfc->tile_y;
+      address += (WORD)pfc->bgw_fetched_data[0] * 16 + pfc->tile_y;
       pfc->bgw_fetched_data[1] = bus_read(address);
       
       fetch_sprites_color(0);
@@ -166,7 +170,7 @@ void pixel_fifo_fetch(){
 
     case PFS_GET_TILE_DATA_HIGH:{
       WORD address = BGW_TILE_DATA_AREA;
-      address += pfc->bgw_fetched_data[0] * 16 + pfc->tile_y + 1;
+      address += (WORD)pfc->bgw_fetched_data[0] * 16 + pfc->tile_y + 1;
       pfc->bgw_fetched_data[2] = bus_read(address);
 
       fetch_sprites_color(1);
