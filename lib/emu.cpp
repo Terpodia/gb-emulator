@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <dma.h>
 #include <ppu.h>
+#include <apu.h>
 
 static emu_context ctx;
 
@@ -16,6 +17,7 @@ void emu_cycles(int cpu_cycles) {
       ctx.ticks++;
       timer_tick();
       ppu_tick();
+      apu_tick();
     }
     dma_tick();
   }
@@ -23,17 +25,6 @@ void emu_cycles(int cpu_cycles) {
 
 emu_context *emu_get_context() {
   return &ctx;
-}
-
-void *cpu_run(void *p){
-  cpu_init();
-  while (!ctx.quit){
-    if(!cpu_step()){
-      std::cout << "CPU Stopped\n";
-      return 0;
-    }
-  }
-  return 0;
 }
 
 int emu_run(int argc, char **argv) {
@@ -50,21 +41,19 @@ int emu_run(int argc, char **argv) {
   initialize_banking();
   if(has_battery()) battery_load();
 
-  pthread_t cpu_thread;
-  if(pthread_create(&cpu_thread, NULL, cpu_run, NULL)){
-    std::cout << "Failed to create cpu thread\n";
-    return -1;
-  }
-
   ui_init();
+  cpu_init();
   uint64_t frame = 0;
   while (!ctx.quit) {
-    usleep(1000);
+    if(!cpu_step()){
+      std::cout << "CPU Stopped\n";
+      return 0;
+    }
     if(ppu_get_context()->current_frame != frame){
       frame = ppu_get_context()->current_frame;
       ui_update();
+      ui_handle_events();
     }
-    ui_handle_events();
   }
   ui_quit();
   return 0;

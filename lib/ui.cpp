@@ -2,6 +2,7 @@
 #include <emu.h>
 #include <bus.h>
 #include <ppu.h>
+#include <apu.h>
 #include <joypad.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>

@@ -3,6 +3,7 @@
 #include <dbg.h>
 #include <emu.h>
 #include <ppu.h>
+#include <apu.h>
 #include <interrupts.h>
 #include <timer.h>
 #include <iomanip>
@@ -26,6 +27,7 @@ void cpu_init() {
 
   timer_init();
   ppu_init();
+  apu_init();
 }
 
 static void fetch_instruction() {

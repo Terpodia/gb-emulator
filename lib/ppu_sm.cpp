@@ -56,7 +56,6 @@ void ppu_mode_oam(){
       ppu_get_context()->pfc.pixel_fifo.pop();
 
     SET_LCD_MODE(MODE_PIXEL_TRANSFER);
-    ppu_get_context()->ppu_ticks = 0;
   }
   if(ppu_get_context()->ppu_ticks == 1){
     if(LCDS_STAT_INT(STAT_INT_MODE_OAM)) cpu_request_interrupt(INT_LCD_STAT);
@@ -71,8 +70,6 @@ void ppu_mode_pixel_transfer(){
 
     if(LCDS_STAT_INT(STAT_INT_MODE_HBLANK))
       cpu_request_interrupt(INT_LCD_STAT);
-    
-    ppu_get_context()->ppu_ticks = 0;
   }
 }
 void ppu_mode_hblank(){
@@ -84,6 +81,21 @@ void ppu_mode_hblank(){
 
       if(LCDS_STAT_INT(STAT_INT_MODE_VBLANK))
         cpu_request_interrupt(INT_LCD_STAT);
+    }
+    else{
+      SET_LCD_MODE(MODE_OAM);
+    }
+    ppu_get_context()->ppu_ticks = 0;
+  }
+}
+void ppu_mode_vblank(){
+  if(ppu_get_context()->ppu_ticks >= LINE_TICKS){
+    increment_ly();
+
+    if(lcd_get_context()->ly >= SCANLINES){
+      SET_LCD_MODE(MODE_OAM);
+      lcd_get_context()->ly = 0;
+      ppu_get_context()->window_line = 0;
 
       uint64_t current_frame_time = get_ticks();
 
@@ -103,22 +115,6 @@ void ppu_mode_hblank(){
         frame_count = 0;
       }
     }
-    else{
-      SET_LCD_MODE(MODE_OAM);
-    }
-    ppu_get_context()->ppu_ticks = 0;
-  }
-}
-void ppu_mode_vblank(){
-  if(ppu_get_context()->ppu_ticks >= LINE_TICKS){
-    increment_ly();
-
-    if(lcd_get_context()->ly >= SCANLINES){
-      SET_LCD_MODE(MODE_OAM);
-      lcd_get_context()->ly = 0;
-      ppu_get_context()->window_line = 0;
-    }
-
     ppu_get_context()->ppu_ticks = 0;
   }
 }
