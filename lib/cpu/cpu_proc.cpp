@@ -494,7 +494,7 @@ void proc_EI(){
 }
 
 void proc_STOP(){
-  //std::cout << "STOPPING...\n";
+  std::cout << "STOPPING...\n";
 }
 
 void setup_instruction_processor(){

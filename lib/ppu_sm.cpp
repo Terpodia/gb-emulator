@@ -70,6 +70,8 @@ void ppu_mode_pixel_transfer(){
 
     if(LCDS_STAT_INT(STAT_INT_MODE_HBLANK))
       cpu_request_interrupt(INT_LCD_STAT);
+
+    //ppu_get_context()->ppu_ticks = 0;
   }
 }
 void ppu_mode_hblank(){
@@ -91,7 +93,6 @@ void ppu_mode_hblank(){
 void ppu_mode_vblank(){
   if(ppu_get_context()->ppu_ticks >= LINE_TICKS){
     increment_ly();
-
     if(lcd_get_context()->ly >= SCANLINES){
       SET_LCD_MODE(MODE_OAM);
       lcd_get_context()->ly = 0;
@@ -114,6 +115,7 @@ void ppu_mode_vblank(){
         start_timer = prev_frame_time;
         frame_count = 0;
       }
+      ppu_get_context()->current_frame++;
     }
     ppu_get_context()->ppu_ticks = 0;
   }

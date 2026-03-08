@@ -28,7 +28,6 @@ void initialize_banking(){
 
   ctx.current_rom_bank = ctx.rom_data + 0x4000;
   ctx.current_ram_bank = ctx.ram_bank[0];
-  ctx.ram_bank_value = 0;
 }
 
 void save_battery(){
@@ -68,10 +67,7 @@ BYTE cart_read(WORD address) {
 void cart_write(WORD address, BYTE value) {
   if(!is_mcb1()) return;
 
-  if(address <= 0x1FFF){
-    if((value & 0xF) == 0xA) ctx.ram_enabled = true;
-    else ctx.ram_enabled = false;
-  }
+  if(address <= 0x1FFF) ctx.ram_enabled = (value & 0xF) == 0xA;
 
   else if(address >= 0x2000 && address <= 0x3FFF){
     value &= 0b11111;
@@ -84,12 +80,14 @@ void cart_write(WORD address, BYTE value) {
   else if(address >= 0x4000 && address <= 0x5FFF){
     value &= 0xFF;
     ctx.ram_bank_value = value;
-    if(ctx.bank_mode)
+    if(ctx.bank_mode) 
       ctx.current_ram_bank = ctx.ram_bank[ctx.ram_bank_value];
   }
 
   else if(address >= 0x6000 && address <= 0x7FFF){
     ctx.bank_mode = value & 1;
+
+    ctx.current_ram_bank = ctx.ram_bank[0];
     if(ctx.bank_mode) ctx.current_ram_bank = ctx.ram_bank[ctx.ram_bank_value];
   }
 
