@@ -10,7 +10,7 @@
 #define XRES 160
 #define YRES 144
 #define SCANLINES 154
-#define MAX_CHECKING_SPRITES_ON_PIXEL 3
+#define MAX_CHECKING_SPRITES_ON_PIXEL 5
 
 struct oam_entry {
   BYTE y;

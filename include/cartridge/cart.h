@@ -31,6 +31,9 @@ struct cart_context {
 
   BYTE ram_bank_value;
 
+  BYTE rom_bank_low_bits;
+  BYTE rom_bank_upper_bits;
+
   bool ram_enabled;
   bool bank_mode;
 };
@@ -46,3 +49,7 @@ bool cart_load(char *cart);
 BYTE cart_read(WORD address);
 
 void cart_write(WORD address, BYTE value);
+
+void save_battery();
+
+cart_context *cart_get_context();

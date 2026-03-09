@@ -1,7 +1,7 @@
 #include <dbg.h>
 #include <bus.h>
 
-char dbg_msg[1024];
+char dbg_msg[1024 * 4];
 int msg_size = 0;
 
 void dbg_update(){

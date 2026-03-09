@@ -1,21 +1,26 @@
 #include <cartridge/cart.h>
 #include <cartridge/debug.h>
 #include <cartridge/read_file.h>
+#include <mbc1.h>
+#include <mbc2.h>
 #include <cstring>
 
 static cart_context ctx;
 
-bool is_mcb1(){
+bool is_mbc1(){
   return ctx.header->type >= 1 && ctx.header->type <= 3;
+}
+bool is_mbc2(){
+  return ctx.header->type >= 5 && ctx.header->type <= 6;
 }
 bool has_battery(){
   return ctx.header->type == 0x3;
 }
 
 void initialize_banking(){
-  if(!is_mcb1()) return;
+  if(!ctx.header->type) return;
 
-  int ram_banks = 0;
+  int ram_banks = 1;
   if(ctx.header->ram_size == 2) ram_banks = 1;
   else if(ctx.header->ram_size == 3) ram_banks = 4;
   else if(ctx.header->ram_size == 4) ram_banks = 16;
@@ -55,45 +60,16 @@ bool cart_load(char *cart_path) {
 }
 
 BYTE cart_read(WORD address) {
-  if(!is_mcb1() || address < 0x4000) return ctx.rom_data[address];
-  if(address >= 0x4000 && address <= 0x7FFF) return ctx.current_rom_bank[address - 0x4000];
-  if(address >= 0xA000 && address <= 0xBFFF){
-    if(!ctx.ram_enabled) return 0xFF;
-    return ctx.current_ram_bank[address - 0xA000];
-  }
-  return 0xFF;
+  if(is_mbc1()) return mbc1_read(address);
+  if(is_mbc2()) return mbc2_read(address);
+  return ctx.rom_data[address];
 }
 
 void cart_write(WORD address, BYTE value) {
-  if(!is_mcb1()) return;
+  if(is_mbc1()) mbc1_write(address, value);
+  else if(is_mbc2()) mbc2_write(address, value);
+}
 
-  if(address <= 0x1FFF) ctx.ram_enabled = (value & 0xF) == 0xA;
-
-  else if(address >= 0x2000 && address <= 0x3FFF){
-    value &= 0b11111;
-    value += value == 0;
-    value &= (1 << (ctx.header->rom_size + 2)) - 1;
-
-    ctx.current_rom_bank = ctx.rom_data + 0x4000 * value;
-  }
-
-  else if(address >= 0x4000 && address <= 0x5FFF){
-    value &= 0xFF;
-    ctx.ram_bank_value = value;
-    if(ctx.bank_mode) 
-      ctx.current_ram_bank = ctx.ram_bank[ctx.ram_bank_value];
-  }
-
-  else if(address >= 0x6000 && address <= 0x7FFF){
-    ctx.bank_mode = value & 1;
-
-    ctx.current_ram_bank = ctx.ram_bank[0];
-    if(ctx.bank_mode) ctx.current_ram_bank = ctx.ram_bank[ctx.ram_bank_value];
-  }
-
-  else if(address >= 0xA000 && address <= 0xBFFF){
-    if(!ctx.ram_enabled) return;
-    ctx.current_ram_bank[address - 0xA000] = value;
-    if(has_battery()) save_battery();
-  }
+cart_context *cart_get_context(){
+  return &ctx;
 }
