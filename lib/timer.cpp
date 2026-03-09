@@ -3,35 +3,38 @@
 
 static timer_context ctx;
 
+static bool tima_overflow = false;
+
+static const BYTE tac_bit[4] = {9, 3, 5, 7};
+
 void timer_init(){
   ctx.div = 0xABCC;
+}
+
+bool should_update_timer(WORD prev_div){
+  return BIT(prev_div, tac_bit[ctx.tac & 0b11]) && !BIT(ctx.div, tac_bit[ctx.tac & 0b11]);
+}
+
+void tima_tick(WORD prev_div){
+  if(tima_overflow){
+    tima_overflow = false;
+    ctx.tima = ctx.tma;
+    cpu_request_interrupt(INT_TIMER);
+  }
+
+  if(should_update_timer(prev_div) && (ctx.tac & 0b100)){
+    ctx.tima++;
+    if(ctx.tima == 0xFF){
+      tima_overflow = true;
+      ctx.tima = 0;
+    }
+  }
 }
 
 void timer_tick(){
   WORD prev_div = ctx.div;
   ctx.div++;
-  bool update_timer = false;
-  switch(ctx.tac & 0b11){
-    case 0:
-      if(BIT(prev_div, 9) && !BIT(ctx.div, 9)) update_timer = true;
-      break;
-    case 1:
-      if(BIT(prev_div, 3) && !BIT(ctx.div, 3)) update_timer = true;
-      break;
-    case 2:
-      if(BIT(prev_div, 5) && !BIT(ctx.div, 5)) update_timer = true;
-      break;
-    case 3:
-      if(BIT(prev_div, 7) && !BIT(ctx.div, 7)) update_timer = true;
-      break;
-  }
-  if(update_timer && (ctx.tac & 0b100)){
-    ctx.tima++;
-    if(ctx.tima == 0xFF){
-      ctx.tima = ctx.tma;
-      cpu_request_interrupt(INT_TIMER);
-    }
-  }
+  tima_tick(prev_div);
 }
 
 BYTE timer_read(WORD address){
@@ -51,9 +54,12 @@ BYTE timer_read(WORD address){
 
 void timer_write(WORD address, BYTE value){
   switch(address){
-    case 0xFF04:
+    case 0xFF04:{
+      WORD prev_div = ctx.div;
       ctx.div = 0;
+      tima_tick(prev_div);
       break;
+    }
     case 0xFF05:
       ctx.tima = value;
       break;
