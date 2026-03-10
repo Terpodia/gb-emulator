@@ -28,6 +28,6 @@ void mbc2_write(WORD address, BYTE value){
   else if(address >= 0xA000 && address <= 0xBFFF){
     if(!ctx->ram_enabled) return;
     ctx->current_ram_bank[address & 0x1FF] = value & 0xF;
-    if(has_battery()) save_battery();
+    if(has_battery()) ctx->should_save_battery = true;
   }
 }

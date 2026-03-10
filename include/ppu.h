@@ -5,7 +5,6 @@
 #include <vector>
 
 #define OAM_MODE_TICKS 80
-#define PIXEL_TRANSFER_MODE_TICKS 172
 #define LINE_TICKS 456
 #define XRES 160
 #define YRES 144

@@ -53,6 +53,7 @@ int emu_run(int argc, char **argv) {
       frame = ppu_get_context()->current_frame;
       ui_update();
       ui_handle_events();
+      if(cart_get_context()->should_save_battery) save_battery();
     }
   }
   ui_quit();

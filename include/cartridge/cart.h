@@ -36,6 +36,9 @@ struct cart_context {
 
   bool ram_enabled;
   bool bank_mode;
+  bool should_save_battery;
+
+  int ram_banks;
 };
 
 void initialize_banking();

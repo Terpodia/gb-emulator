@@ -3,7 +3,7 @@
 #include <bus.h>
 #include <unistd.h>
 
-const int OAM_START = 0xFE00;
+const WORD OAM_START = 0xFE00;
 
 static dma_context ctx;
 

@@ -28,7 +28,6 @@ void increment_ly(){
 void load_line_sprites(){
   std::vector<oam_entry> &line_sprites = ppu_get_context()->line_sprites;
   line_sprites.clear();
-
   for(int i = 0; i < 40; i++){
     // at most 10 sprites per line
     if(line_sprites.size() >= 10) break;
@@ -70,8 +69,6 @@ void ppu_mode_pixel_transfer(){
 
     if(LCDS_STAT_INT(STAT_INT_MODE_HBLANK))
       cpu_request_interrupt(INT_LCD_STAT);
-
-    //ppu_get_context()->ppu_ticks = 0;
   }
 }
 void ppu_mode_hblank(){
