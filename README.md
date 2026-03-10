@@ -1,6 +1,8 @@
 # gb-emulator
 A Gameboy emulator for Linux
 
+![PKM](pkm.jpg)
+
 ## Prerequisites
 - Build-Essential `sudo apt install build-essential`
 - SDL2 library `sudo apt install libsdl2-dev`
