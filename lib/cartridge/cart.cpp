@@ -18,7 +18,7 @@ bool is_mbc5(){
   return ctx.header->type >= 0x19 && ctx.header->type <= 0x1E;
 }
 bool has_battery(){
-  return ctx.header->type == 5 || ctx.header->type == 6 || ctx.header->type == 0x1B || ctx.header->type == 0x1E;
+  return ctx.header->type == 3 || ctx.header->type == 6 || ctx.header->type == 0x1B || ctx.header->type == 0x1E;
 }
 
 void initialize_banking(){
@@ -62,10 +62,10 @@ void battery_load(){
   if(!fp) return;
 
   fread(save_buffer, 0x2000 * ctx.ram_banks, 1, fp);
-  fclose(fp);
   for(int i = 0; i < ctx.ram_banks; i++)
     for(int j = 0; j < 0x2000; j++) 
       ctx.ram_bank[i][j] = save_buffer[j + i * 0x2000];
+  fclose(fp);
 }
 
 bool cart_load(char *cart_path) {
