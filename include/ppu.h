@@ -68,6 +68,8 @@ ppu_context *ppu_get_context();
 
 void ppu_init();
 
+void frame_rate_update();
+
 void ppu_tick();
 
 BYTE ppu_oam_read(WORD address);

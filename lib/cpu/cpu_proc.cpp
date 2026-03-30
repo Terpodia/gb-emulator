@@ -3,6 +3,7 @@
 #include <bus.h>
 #include <cpu_stack.h>
 #include <instructions.h>
+#include <interrupts.h>
 
 extern cpu_context ctx;
 
@@ -461,6 +462,10 @@ void proc_DAA(){
 
 void proc_HALT(){
   ctx.halted = true;
+  if(ctx.interrupt_master_enable) return;
+  if(ctx.interrupt_flag & ctx.interrupt_enable_register){
+    std::cout << "HALT BUG!\n";
+  } 
   //std::cout << "HALTING...\n";
 }
 

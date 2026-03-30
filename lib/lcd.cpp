@@ -32,7 +32,9 @@ void lcd_init(){
 
 BYTE lcd_read(WORD address){
   BYTE *p = (BYTE *)&ctx;
-  return p[address - 0xFF40];
+  BYTE value = p[address - 0xFF40];
+  if(address == 0xFF41) value |= 0x80;
+  return value;
 }
 
 void update_palette(WORD address, BYTE pal){
@@ -60,7 +62,7 @@ void lcd_write(WORD address, BYTE value){
     }
   }
   if(address == 0xFF41){
-    ctx.lcds = (value & 0x78) | (ctx.lcds & 0x07);                                                                                                                       
+    ctx.lcds = (value & 0x78) | (ctx.lcds & 0x07);
     return;
   }
   if(address == 0xFF46) dma_start(value);

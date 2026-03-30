@@ -9,7 +9,7 @@ bool window_is_visible(){
 
 void transfer_pixels(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
-  if(pfc->pixel_fifo.size() > 8){
+  if(pfc->pixel_fifo.size() >= 8){
     uint32_t color = pfc->pixel_fifo.front();
     pfc->pixel_fifo.pop();
 

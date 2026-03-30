@@ -5,6 +5,7 @@
 #include <ppu.h>
 #include <dma.h>
 #include <apu.h>
+#include <dma.h>
 #include <interrupts.h>
 #include <timer.h>
 #include <iomanip>
@@ -78,7 +79,7 @@ bool cpu_step() {
   if(!ctx.halted) {
     //cpu_log();
     fetch_instruction();
-    if (!fetch_data()) return false;
+    if(!fetch_data()) return false;
     execute();
   }
   else {

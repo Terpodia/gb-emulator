@@ -18,6 +18,8 @@ struct lcd_context {
   uint32_t bg_colors[4];
   uint32_t sp1_colors[4];
   uint32_t sp2_colors[4];
+
+  uint32_t off_clock;
 };
 
 enum lcd_mode {

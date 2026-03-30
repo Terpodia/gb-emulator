@@ -1,6 +1,16 @@
 #include <mbc1.h>
 #include <cartridge/cart.h>
 
+void change_rom_bank(){
+  cart_context *ctx = cart_get_context();
+
+  int idx = ctx->rom_bank_low_bits;
+  if(!ctx->bank_mode) idx |= (int)ctx->rom_bank_upper_bits << 5;
+
+  idx &= (1 << (ctx->header->rom_size + 2)) - 1;
+  ctx->current_rom_bank = ctx->rom_data + 0x4000 * idx;
+}
+
 BYTE mbc1_read(WORD address){
   cart_context *ctx = cart_get_context();
   if(address < 0x4000) return ctx->rom_data[address];
@@ -21,11 +31,8 @@ void mbc1_write(WORD address, BYTE value){
   else if(address >= 0x2000 && address <= 0x3FFF){
     value &= 0b11111;
     value += value == 0;
-    value &= (1 << (ctx->header->rom_size + 2)) - 1;
-
     ctx->rom_bank_low_bits = value;
-    if(!ctx->bank_mode) value |= ctx->rom_bank_upper_bits << 5;
-    ctx->current_rom_bank = ctx->rom_data + 0x4000 * (int)value;
+    change_rom_bank();
   }
 
   else if(address >= 0x4000 && address <= 0x5FFF){
@@ -36,20 +43,15 @@ void mbc1_write(WORD address, BYTE value){
     }
     else{
       ctx->rom_bank_upper_bits = value;
-      ctx->current_rom_bank = ctx->rom_data + 0x4000 * (int)(ctx->rom_bank_low_bits | (value << 5));
+      change_rom_bank();
     }
   }
 
   else if(address >= 0x6000 && address <= 0x7FFF){
     ctx->bank_mode = value & 1;
-    if(ctx->bank_mode){ 
-      ctx->current_ram_bank = ctx->ram_bank[ctx->ram_bank_value];
-      ctx->current_rom_bank = ctx->rom_data + 0x4000 * (int)ctx->rom_bank_low_bits;
-    }
-    else{
-      ctx->current_ram_bank = ctx->ram_bank[0];
-      ctx->current_rom_bank = ctx->rom_data + 0x4000 * (int)(ctx->rom_bank_low_bits | (ctx->rom_bank_upper_bits << 5));
-    }
+    if(ctx->bank_mode) ctx->current_ram_bank = ctx->ram_bank[ctx->ram_bank_value];
+    else ctx->current_ram_bank = ctx->ram_bank[0];
+    change_rom_bank();
   }
 
   else if(address >= 0xA000 && address <= 0xBFFF){
