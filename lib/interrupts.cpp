@@ -13,11 +13,16 @@ bool int_check(BYTE interrupt_type, WORD address){
   ctx.interrupt_master_enable = false;
   ctx.halted = false;
 
-  emu_cycles(2);
-  push16(ctx.cpu_regs.pc);
-  emu_cycles(2);
-  ctx.cpu_regs.pc = address;
   emu_cycles(1);
+  push((ctx.cpu_regs.pc >> 8) & 0xFF);
+
+  emu_cycles(1);
+  push(ctx.cpu_regs.pc & 0xFF);
+
+  emu_cycles(1);
+  ctx.cpu_regs.pc = address;
+
+  emu_cycles(2);
 
   return true;
 }

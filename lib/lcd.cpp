@@ -25,6 +25,7 @@ void lcd_init(){
     ctx.sp1_colors[i] = default_color[i];
     ctx.sp2_colors[i] = default_color[i];
   }
+  ctx.off_clock = 0;
 }
 
 BYTE lcd_read(WORD address){
@@ -44,10 +45,22 @@ void update_palette(WORD address, BYTE pal){
 }
 
 void lcd_write(WORD address, BYTE value){
-  BYTE *p = (BYTE *)&ctx;
-  p[address - 0xFF40] = value;
+  if(address == 0xFF40){
+    if((value & 0x80) && !(ctx.lcdc & 0x80)) {
+      SET_LCD_MODE(MODE_OAM); 
+      ctx.off_clock = 0;
+    }
+  }
+  if(address == 0xFF41){
+    ctx.lcds = (value & 0x78) | (ctx.lcds & 0x07);                                                                                                                       
+    return;
+  }
   if(address == 0xFF46) dma_start(value);
   if(address == 0xFF47) update_palette(address, value);
   if(address == 0xFF48 || address == 0xFF49) 
     update_palette(address, value & 0b11111100);
+
+  BYTE *p = (BYTE *)&ctx;
+  p[address - 0xFF40] = value;
 }
+

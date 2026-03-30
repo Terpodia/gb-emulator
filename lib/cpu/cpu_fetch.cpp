@@ -14,11 +14,11 @@ bool fetch_data() {
       break;
 
     case AM_R_D16: {
+      emu_cycles(1);
       WORD lo = bus_read(ctx.cpu_regs.pc);
-      emu_cycles(1);
 
-      WORD hi = bus_read(ctx.cpu_regs.pc + 1);
       emu_cycles(1);
+      WORD hi = bus_read(ctx.cpu_regs.pc + 1);
 
       ctx.fetched_data = (hi << 8) | lo;
       ctx.cpu_regs.pc += 2;
@@ -45,23 +45,25 @@ bool fetch_data() {
       break;
 
     case AM_R_D8:
-      ctx.fetched_data = bus_read(ctx.cpu_regs.pc);
       emu_cycles(1);
+      ctx.fetched_data = bus_read(ctx.cpu_regs.pc);
       ctx.cpu_regs.pc++;
       break;
 
     case AM_R_MR:{
       WORD address = cpu_read_reg(ctx.current_instruction->reg_2);
       if(ctx.current_instruction->reg_2 == RT_C) address += 0xFF00;
-      ctx.fetched_data = bus_read(address);
+
       emu_cycles(1);
+      ctx.fetched_data = bus_read(address);
       break;
     }
 
     case AM_R_HLI:{
       WORD address = cpu_read_reg(ctx.current_instruction->reg_2);
-      ctx.fetched_data = bus_read(address);
+
       emu_cycles(1);
+      ctx.fetched_data = bus_read(address);
 
       WORD val = cpu_read_reg(RT_HL);
       cpu_write_reg(RT_HL, val+1);
@@ -70,8 +72,9 @@ bool fetch_data() {
 
     case AM_R_HLD:{
       WORD address = cpu_read_reg(ctx.current_instruction->reg_2);
-      ctx.fetched_data = bus_read(address);
+
       emu_cycles(1);
+      ctx.fetched_data = bus_read(address);
 
       WORD val = cpu_read_reg(RT_HL);
       cpu_write_reg(RT_HL, val-1);
@@ -103,18 +106,21 @@ bool fetch_data() {
     }
 
     case AM_R_A8:{
+      emu_cycles(1);
       WORD address = bus_read(ctx.cpu_regs.pc++);
-      emu_cycles(1);
+
       address |= 0xFF00;
-      ctx.fetched_data = bus_read(address);
+
       emu_cycles(1);
+      ctx.fetched_data = bus_read(address);
 
       break;
     }
 
     case AM_A8_R:{
-      WORD address = bus_read(ctx.cpu_regs.pc++);
       emu_cycles(1);
+      WORD address = bus_read(ctx.cpu_regs.pc++);
+
       address |= 0xFF00;
 
       ctx.fetched_data = cpu_read_reg(ctx.current_instruction->reg_2);
@@ -125,17 +131,17 @@ bool fetch_data() {
     }
 
     case AM_HL_SPR:{
-      ctx.fetched_data = bus_read(ctx.cpu_regs.pc++);
       emu_cycles(1);
+      ctx.fetched_data = bus_read(ctx.cpu_regs.pc++);
       break;
     }
 
     case AM_D16: {
+      emu_cycles(1);
       WORD lo = bus_read(ctx.cpu_regs.pc);
-      emu_cycles(1);
 
-      WORD hi = bus_read(ctx.cpu_regs.pc + 1);
       emu_cycles(1);
+      WORD hi = bus_read(ctx.cpu_regs.pc + 1);
 
       ctx.fetched_data = (hi << 8) | lo;
       ctx.cpu_regs.pc += 2;
@@ -143,14 +149,14 @@ bool fetch_data() {
     }
 
     case AM_D8: {
-      ctx.fetched_data = bus_read(ctx.cpu_regs.pc++);
       emu_cycles(1);
+      ctx.fetched_data = bus_read(ctx.cpu_regs.pc++);
       break;
     }
 
     case AM_MR_D8: {
-      ctx.fetched_data = bus_read(ctx.cpu_regs.pc++);
       emu_cycles(1);
+      ctx.fetched_data = bus_read(ctx.cpu_regs.pc++);
       WORD address = cpu_read_reg(ctx.current_instruction->reg_1);
 
       ctx.memory_destination = address;
@@ -162,16 +168,17 @@ bool fetch_data() {
       WORD address = cpu_read_reg(ctx.current_instruction->reg_1);
       ctx.memory_destination = address;
       ctx.destination_is_memory = true;
-      ctx.fetched_data = bus_read(address);
       emu_cycles(1);
+      ctx.fetched_data = bus_read(address);
       break;
     }
 
     case AM_A16_R: {
+      emu_cycles(1);
       WORD lo = bus_read(ctx.cpu_regs.pc++);
+
       emu_cycles(1);
       WORD hi = bus_read(ctx.cpu_regs.pc++);
-      emu_cycles(1);
 
       WORD address = (hi << 8) | lo;
 
@@ -183,15 +190,16 @@ bool fetch_data() {
     }
 
     case AM_R_A16: {
+      emu_cycles(1);
       WORD lo = bus_read(ctx.cpu_regs.pc++);
+
       emu_cycles(1);
       WORD hi = bus_read(ctx.cpu_regs.pc++);
-      emu_cycles(1);
 
       WORD address = (hi << 8) | lo;
 
-      ctx.fetched_data = bus_read(address);
       emu_cycles(1);
+      ctx.fetched_data = bus_read(address);
 
       break;
     }

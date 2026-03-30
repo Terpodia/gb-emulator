@@ -26,6 +26,7 @@ bool check_cond(){
     case CT_C: return CPU_FLAG_C;
   }
   std:: cout << "ERROR: UNKONWN CONDITION\n";
+  NO_IMPL
   return false;
 }
 
@@ -42,12 +43,12 @@ bool is_16_bit_register(register_type rt){
 
 void proc_LD(){
   if(ctx.destination_is_memory){
+    emu_cycles(1);
     if(is_16_bit_register(ctx.current_instruction->reg_2)){
-      bus_write16(ctx.memory_destination, ctx.fetched_data);
       emu_cycles(1);
+      bus_write16(ctx.memory_destination, ctx.fetched_data);
     }
     else bus_write(ctx.memory_destination, ctx.fetched_data);
-    emu_cycles(1);
     return;
   }
   if(ctx.current_instruction->addr_mode == AM_HL_SPR){
@@ -57,15 +58,20 @@ void proc_LD(){
 
     cpu_write_reg(RT_HL, value + (char)ctx.fetched_data);
     cpu_set_flags(0, 0, h, c);
+    emu_cycles(1);
     return;
   }
   cpu_write_reg(ctx.current_instruction->reg_1, ctx.fetched_data);
+  if(ctx.current_instruction->reg_1 == RT_SP &&
+     ctx.current_instruction->addr_mode == AM_R_R){
+    emu_cycles(1);
+  }
 }
 
 void proc_LDH(){
   if(ctx.destination_is_memory){
-    bus_write(ctx.memory_destination | 0xFF00, ctx.fetched_data);
     emu_cycles(1);
+    bus_write(ctx.memory_destination | 0xFF00, ctx.fetched_data);
     return;
   }
   cpu_write_reg(ctx.current_instruction->reg_1, ctx.fetched_data);
@@ -73,19 +79,21 @@ void proc_LDH(){
 
 void proc_PUSH(){
   WORD value = cpu_read_reg(ctx.current_instruction->reg_1);
+  emu_cycles(1);
   push((value >> 8) & 0xFF);
+
   emu_cycles(1);
   push(value & 0xFF);
-  emu_cycles(1);
 
   emu_cycles(1);
 }
 
 void proc_POP(){
+  emu_cycles(1);
   WORD lo = pop();
+
   emu_cycles(1);
   WORD hi = pop();
-  emu_cycles(1);
 
   WORD value = (hi << 8) | lo;
 
@@ -100,10 +108,11 @@ void proc_RET(){
     emu_cycles(1);
 
   if(check_cond()){
+    emu_cycles(1);
     WORD lo = pop();
+
     emu_cycles(1);
     WORD hi = pop();
-    emu_cycles(1);
 
     WORD pc = (hi << 8) | lo;
 
@@ -115,11 +124,11 @@ void proc_RET(){
 
 void proc_CALL(){
   if(check_cond()){
+    emu_cycles(1);
     push((ctx.cpu_regs.pc >> 8) & 0xFF);
-    emu_cycles(1);
 
-    push(ctx.cpu_regs.pc & 0xFF);
     emu_cycles(1);
+    push(ctx.cpu_regs.pc & 0xFF);
 
     ctx.cpu_regs.pc = ctx.fetched_data;
     emu_cycles(1);
@@ -134,11 +143,11 @@ void proc_JR(){
 }
 
 void proc_RST(){
+  emu_cycles(1);
   push((ctx.cpu_regs.pc >> 8) & 0xFF);
-  emu_cycles(1);
 
-  push(ctx.cpu_regs.pc & 0xFF);
   emu_cycles(1);
+  push(ctx.cpu_regs.pc & 0xFF);
 
   ctx.cpu_regs.pc = ctx.current_instruction->param;
   emu_cycles(1);
@@ -151,8 +160,8 @@ void proc_RETI(){
 
 void proc_INC(){
   if(ctx.destination_is_memory){
-    bus_write(ctx.memory_destination, ctx.fetched_data + 1);
     emu_cycles(1);
+    bus_write(ctx.memory_destination, ctx.fetched_data + 1);
 
     BYTE h = ((ctx.fetched_data & 0xF) + 1) > 0xF;
     BYTE z = ((ctx.fetched_data + 1) & 0xFF) == 0;
@@ -172,8 +181,8 @@ void proc_INC(){
 
 void proc_DEC(){
   if(ctx.destination_is_memory){
-    bus_write(ctx.memory_destination, ctx.fetched_data - 1);
     emu_cycles(1);
+    bus_write(ctx.memory_destination, ctx.fetched_data - 1);
 
     BYTE h = ((ctx.fetched_data & 0xF) == 0);
     BYTE z = (ctx.fetched_data - 1) == 0;
@@ -298,113 +307,83 @@ void proc_CB(){
   WORD op_code = ctx.fetched_data;
   register_type reg = rt_lookup[op_code & 7];
 
-  if(reg == RT_HL) emu_cycles(2);
-
+  if(reg == RT_HL) emu_cycles(1);
   BYTE val = cpu_read_reg8(reg);
+
   BYTE bit_index = (op_code >> 3) & 7;
 
   switch((op_code >> 6) & 3){
     case 1:
       cpu_set_flags(!BIT(val, bit_index), 0, 1, -1);
       return;
-   
+
     case 2:
       val &= ~(1<<bit_index);
-      cpu_write_reg8(reg, val);
-      return;
-    
+      break;
+
     case 3:
       val |= (1<<bit_index);
-      cpu_write_reg8(reg, val);
-      return;
+      break;
+
+    default:
+      switch((op_code >> 3) & 7){
+        case 0:{
+          BYTE c = BIT(val, 7);
+          val <<= 1;
+          if(c) val |= 1;
+          cpu_set_flags(val == 0, 0, 0, c);
+          break;
+        }
+        case 1:{
+          BYTE c = val & 1;
+          val >>= 1;
+          if(c) val |= (1<<7);
+          cpu_set_flags(val == 0, 0, 0, c);
+          break;
+        }
+        case 2:{
+          BYTE c = BIT(val, 7);
+          val <<= 1;
+          val |= CPU_FLAG_C;
+          cpu_set_flags(val == 0, 0, 0, c);
+          break;
+        }
+        case 3:{
+          BYTE c = val & 1;
+          val >>= 1;
+          if(CPU_FLAG_C) val |= (1<<7);
+          cpu_set_flags(val == 0, 0, 0, c);
+          break;
+        }
+        case 4:{
+          BYTE c = BIT(val, 7);
+          val <<= 1;
+          cpu_set_flags(val == 0, 0, 0, c);
+          break;
+        }
+        case 5:{
+          BYTE c = val & 1;
+          val = (int8_t)val >> 1;
+          cpu_set_flags(val == 0, 0, 0, c);
+          break;
+        }
+        case 6:{
+          val = (val >> 4) | (val << 4);
+          cpu_set_flags(val == 0, 0, 0, 0);
+          break;
+        }
+        case 7:{
+          BYTE c = val & 1;
+          val >>= 1;
+          cpu_set_flags(val == 0, 0, 0, c);
+          break;
+        }
+      }
+      break;
   }
-  switch((op_code >> 3) & 7){
-    case 0:{
-      BYTE c = BIT(val, 7);
-      val <<= 1;
-      if(c) val |= 1;
 
-      BYTE z = val == 0;
-
-      cpu_write_reg8(reg, val);
-      cpu_set_flags(z, 0, 0, c);
-      return;
-    }
-    case 1:{
-      BYTE c = val & 1;
-      val >>= 1;
-      if(c) val |= (1<<7);
-
-      BYTE z = val == 0;
-
-      cpu_write_reg8(reg, val);
-      cpu_set_flags(z, 0, 0, c);
-      return;
-    }
-    case 2:{
-      BYTE c = BIT(val, 7);
-      val <<= 1;
-      val |= CPU_FLAG_C;
-
-      BYTE z = val == 0;
-
-      cpu_write_reg8(reg, val);
-      cpu_set_flags(z, 0, 0, c);
-      return;
-    }
-
-    case 3:{
-      BYTE c = val & 1;
-      val >>= 1;
-      if(CPU_FLAG_C) val |= (1<<7);
-
-      BYTE z = val == 0;
-
-      cpu_write_reg8(reg, val);
-      cpu_set_flags(z, 0, 0, c);
-      return;
-    }
-
-    case 4:{
-      BYTE c = BIT(val, 7);
-      val <<= 1;
-
-      BYTE z = val == 0;
-
-      cpu_write_reg8(reg, val);
-      cpu_set_flags(z, 0, 0, c);
-      return;
-    }
-
-    case 5:{
-      BYTE c = val & 1;
-      val = (int8_t)val >> 1;
-
-      BYTE z = val == 0;
-
-      cpu_write_reg8(reg, val);
-      cpu_set_flags(z, 0, 0, c);
-      return;
-    }
-
-    case 6:{
-      val = (val >> 4) | (val << 4);
-      cpu_write_reg8(reg, val);
-      cpu_set_flags(val == 0, 0, 0, 0);
-      return;
-    }
-
-    case 7:{
-      BYTE c = val & 1;
-      val >>= 1;
-
-      BYTE z = val == 0;
-
-      cpu_write_reg8(reg, val);
-      cpu_set_flags(z, 0, 0, c);
-      return;
-    }
-  }
+  if(reg == RT_HL) emu_cycles(1);
+  cpu_write_reg8(reg, val);
 }
 
 void proc_RLA(){

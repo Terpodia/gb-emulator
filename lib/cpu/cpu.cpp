@@ -3,6 +3,7 @@
 #include <dbg.h>
 #include <emu.h>
 #include <ppu.h>
+#include <dma.h>
 #include <apu.h>
 #include <interrupts.h>
 #include <timer.h>
@@ -31,6 +32,7 @@ void cpu_init() {
 }
 
 static void fetch_instruction() {
+  emu_cycles(1);
   ctx.cur_opcode = bus_read(ctx.cpu_regs.pc++);
   ctx.current_instruction = instruction_by_opcode(ctx.cur_opcode);
   if (ctx.current_instruction->in_type == IN_NONE) {
@@ -41,7 +43,7 @@ static void fetch_instruction() {
   }
 }
 
-static void execute() { 
+static void execute() {
   IN_PROC proc = get_instruction_processor();
   if(!proc){
     std::cout << "Not executing yet " << std::hex << (int)ctx.cur_opcode << std::dec << "\n";
@@ -67,22 +69,21 @@ void cpu_log(){
             << std::setw(2) << (int)bus_read(pc+1) << ","
             << std::setw(2) << (int)bus_read(pc+2) << ","
             << std::setw(2) << (int)bus_read(pc+3) << "\n";
-  std::cout << std::dec; 
+  std::cout << std::dec;
   dbg_update();
   dbg_print();
 }
 
 bool cpu_step() {
-  if (!ctx.halted) {
+  if(!ctx.halted) {
     //cpu_log();
     fetch_instruction();
-    emu_cycles(1);
     if (!fetch_data()) return false;
     execute();
   }
   else {
     emu_cycles(1);
-    if(ctx.interrupt_flag) ctx.halted = false;
+    if(ctx.interrupt_flag & ctx.interrupt_enable_register) ctx.halted = false;
   }
   if(ctx.interrupt_master_enable) cpu_handle_interrupts();
 

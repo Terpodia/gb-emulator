@@ -4,18 +4,8 @@
 #include <ppu_sm.h>
 #include <lcd.h>
 #include <ppu.h>
-#include <ui.h>
 
-uint64_t prev_frame_time;
-uint64_t target_frame_time = 1000/60;
-uint64_t frame_count;
-uint64_t start_timer;
-
-void increment_ly(){
-  if(window_is_visible() && lcd_get_context()->ly >= lcd_get_context()->wy){
-    ppu_get_context()->window_line++;
-  }
-  lcd_get_context()->ly++;
+void compare_lyc(){
   if(lcd_get_context()->ly == lcd_get_context()->lyc){
     if(LCDS_STAT_INT(STAT_INT_MODE_LYC)) cpu_request_interrupt(INT_LCD_STAT);
     LCDS_LYC_SET(1);
@@ -23,6 +13,14 @@ void increment_ly(){
   else{
     LCDS_LYC_SET(0);
   }
+}
+
+void increment_ly(){
+  if(window_is_visible() && lcd_get_context()->ly >= lcd_get_context()->wy){
+    ppu_get_context()->window_line++;
+  }
+  lcd_get_context()->ly++;
+  compare_lyc();
 }
 
 void load_line_sprites(){
@@ -92,27 +90,12 @@ void ppu_mode_vblank(){
     increment_ly();
     if(lcd_get_context()->ly >= SCANLINES){
       SET_LCD_MODE(MODE_OAM);
+
       lcd_get_context()->ly = 0;
       ppu_get_context()->window_line = 0;
 
-      uint64_t current_frame_time = get_ticks();
-
-      if(current_frame_time - prev_frame_time < target_frame_time){
-        uint64_t delta = target_frame_time - (current_frame_time - prev_frame_time);
-        delay(delta);
-        prev_frame_time = current_frame_time + delta;
-      }
-      else prev_frame_time = current_frame_time;
-
-      frame_count++;
-      ppu_get_context()->current_frame++;
-
-      if(prev_frame_time - start_timer >= 1000){
-        std::cout << "FPS: " << frame_count << "\n";
-        start_timer = prev_frame_time;
-        frame_count = 0;
-      }
-      ppu_get_context()->current_frame++;
+      compare_lyc();
+      frame_rate_update();
     }
     ppu_get_context()->ppu_ticks = 0;
   }
