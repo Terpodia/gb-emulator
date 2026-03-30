@@ -50,13 +50,10 @@ void frame_rate_update(){
 void ppu_tick(){
   if(!(lcd_get_context()->lcdc & 0x80)) {
     lcd_get_context()->off_clock++;
-
     if(lcd_get_context()->off_clock >= 70224){
       lcd_get_context()->off_clock = 0;
       frame_rate_update();
     }
-
-    ctx.ppu_ticks = 0;
     return;
   }
 

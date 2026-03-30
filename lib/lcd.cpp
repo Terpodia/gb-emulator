@@ -1,5 +1,7 @@
 #include <lcd.h>
 #include <dma.h>
+#include <ppu.h>
+#include <ppu_sm.h>
 
 static uint32_t default_color[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000};
 
@@ -48,7 +50,13 @@ void lcd_write(WORD address, BYTE value){
   if(address == 0xFF40){
     if((value & 0x80) && !(ctx.lcdc & 0x80)) {
       SET_LCD_MODE(MODE_OAM); 
+      ppu_get_context()->ppu_ticks = 0;
+      compare_lyc();
+    }
+    if(!(value & 0x80) && (ctx.lcdc & 0x80)) {
+      SET_LCD_MODE(MODE_HBLANK); 
       ctx.off_clock = 0;
+      ctx.ly = 0;
     }
   }
   if(address == 0xFF41){
