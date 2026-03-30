@@ -24,8 +24,8 @@ BYTE bus_read(WORD address) {
     return wram_read(address); 
   }
   else if(address <= 0xFDFF){
-    // Echo RAM - Use of this area is prohibited
-    return 0;
+    // Echo RAM
+    return wram_read(address - 0x2000);
   }
   else if(address <= 0xFE9F){
     // OAM
@@ -70,7 +70,8 @@ void bus_write(WORD address, BYTE value) {
     wram_write(address, value);
   }
   else if(address <= 0xFDFF){
-    // Echo RAM - Use of this area is prohibited
+    // Echo RAM
+    wram_write(address - 0x2000, value);
   }
   else if(address <= 0xFE9F){
     // OAM
