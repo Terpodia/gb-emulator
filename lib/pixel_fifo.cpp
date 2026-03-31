@@ -53,7 +53,7 @@ bool pixel_sprite_color(BYTE color, uint32_t &palette){
 
 bool pixel_fifo_add(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
-  if(pfc->pixel_fifo.size() > 8) return false;
+  if(pfc->pixel_fifo.size() >= 8) return false;
 
   int first_bit = 7;
   if(!pfc->bgw_fetched_is_window && pfc->lx < lcd_get_context()->scx % 8)

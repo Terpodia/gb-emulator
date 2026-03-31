@@ -57,7 +57,6 @@ void lcd_write(WORD address, BYTE value){
     }
     if(!(value & 0x80) && (ctx.lcdc & 0x80)) {
       SET_LCD_MODE(MODE_HBLANK); 
-      ctx.off_clock = 0;
       ctx.ly = 0;
     }
   }
@@ -67,7 +66,7 @@ void lcd_write(WORD address, BYTE value){
   }
   if(address == 0xFF46) dma_start(value);
   if(address == 0xFF47) update_palette(address, value);
-  if(address == 0xFF48 || address == 0xFF49) 
+  if(address == 0xFF48 || address == 0xFF49)
     update_palette(address, value & 0b11111100);
 
   BYTE *p = (BYTE *)&ctx;

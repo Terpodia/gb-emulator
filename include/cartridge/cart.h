@@ -34,11 +34,16 @@ struct cart_context {
   BYTE rom_bank_low_bits;
   BYTE rom_bank_upper_bits;
 
+  BYTE current_rtc_register;
+  BYTE rtc_register[5];
+
   bool ram_enabled;
   bool bank_mode;
   bool should_save_battery;
+  bool should_latch_time;
 
   int ram_banks;
+  uint64_t current_time;
 };
 
 void initialize_banking();

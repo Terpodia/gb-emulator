@@ -48,8 +48,8 @@ void frame_rate_update(){
 }
 
 void ppu_tick(){
+  lcd_get_context()->off_clock++;
   if(!(lcd_get_context()->lcdc & 0x80)) {
-    lcd_get_context()->off_clock++;
     if(lcd_get_context()->off_clock >= 70224){
       lcd_get_context()->off_clock = 0;
       frame_rate_update();
@@ -58,7 +58,6 @@ void ppu_tick(){
   }
 
   ctx.ppu_ticks++;
-
   switch(LCD_MODE){
     case MODE_OAM:
       ppu_mode_oam();
