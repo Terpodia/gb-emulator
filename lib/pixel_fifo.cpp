@@ -68,7 +68,7 @@ bool pixel_fifo_add(){
   if(pfc->pixel_fifo.size() >= 8) return false;
 
   int first_bit = 7;
-  if(pfc->lx < lcd_get_context()->scx % 8){
+  if(!pfc->bgw_fetched_is_window && pfc->lx < lcd_get_context()->scx % 8){
     first_bit -= (lcd_get_context()->scx % 8) - pfc->lx;
     pfc->lx = lcd_get_context()->scx % 8;
   }
@@ -85,12 +85,10 @@ bool pixel_fifo_add(){
 
     uint32_t palette = lcd_get_context()->bg_colors[color];
 
-    if(OBJ_ENABLE && pixel_sprite_color(color, palette))
-      pfc->pixel_fifo.push(palette), pfc->fetched_x++;
+    if(OBJ_ENABLE) pixel_sprite_color(color, palette);
 
-    else
-      pfc->pixel_fifo.push(palette), pfc->fetched_x++;
-
+    pfc->pixel_fifo.push(palette); 
+    pfc->fetched_x++;
     pfc->lx++;
   }
   return true;
