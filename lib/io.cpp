@@ -1,19 +1,16 @@
 #include <io.h>
 #include <joypad.h>
 #include <timer.h>
+#include <serial.h>
 #include <cpu.h>
 #include <dma.h>
 #include <lcd.h>
 #include <apu.h>
 
-BYTE serial[2];
-
 BYTE io_read(WORD address){
   if(address == 0xFF00) return joypad_read();
 
-  if(address == 0xFF01) return serial[0];
-
-  if(address == 0xFF02) return serial[1];
+  if(address >= 0xFF01 && address <= 0xFF02) return serial_read(address);
 
   if(address >= 0xFF04 && address <= 0xFF07) return timer_read(address);
 
@@ -34,12 +31,8 @@ void io_write(WORD address, BYTE value){
     return;
   }
 
-  if(address == 0xFF01){
-    serial[0] = value;
-    return;
-  }
-  if(address == 0xFF02){
-    serial[1] = value;
+  if(address >= 0xFF01 && address <= 0xFF02){
+    serial_write(address, value);
     return;
   }
   if(address >= 0xFF04 && address <= 0xFF07){

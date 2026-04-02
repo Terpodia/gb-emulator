@@ -1,6 +1,5 @@
 #include <bus.h>
 #include <cpu.h>
-#include <dbg.h>
 #include <emu.h>
 #include <ppu.h>
 #include <dma.h>
@@ -71,8 +70,6 @@ void cpu_log(){
             << std::setw(2) << (int)bus_read(pc+2) << ","
             << std::setw(2) << (int)bus_read(pc+3) << "\n";
   std::cout << std::dec;
-  dbg_update();
-  dbg_print();
 }
 
 bool cpu_step() {

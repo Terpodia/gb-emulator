@@ -3,8 +3,7 @@
 #include <emu.h>
 #include <ui.h>
 #include <timer.h>
-#include <pthread.h>
-#include <unistd.h>
+#include <serial.h>
 #include <dma.h>
 #include <ppu.h>
 #include <apu.h>
@@ -18,6 +17,7 @@ void emu_cycles(int cpu_cycles) {
       timer_tick();
       ppu_tick();
       apu_tick();
+      serial_tick();
     }
     dma_tick();
   }
