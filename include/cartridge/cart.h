@@ -41,6 +41,7 @@ struct cart_context {
   bool bank_mode;
   bool should_save_battery;
   bool should_latch_time;
+  bool is_multicart;
 
   int ram_banks;
   uint64_t current_time;

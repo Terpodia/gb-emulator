@@ -50,6 +50,8 @@ void initialize_banking(){
   ctx.current_ram_bank = ctx.ram_bank[0];
   ctx.should_save_battery = false;
   ctx.should_latch_time = true;
+
+  if(is_mbc1()) check_multicart();
 }
 
 static BYTE save_buffer[16 * 0x2000 + 100];
