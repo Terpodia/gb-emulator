@@ -32,7 +32,11 @@ enum pixel_fifo_state {
 };
 
 struct pixel_fifo_ctx {
-  std::queue<uint32_t> pixel_fifo;
+  uint32_t pixel_fifo[16];
+  int pixel_fifo_head;
+  int pixel_fifo_tail;
+  int pixel_fifo_size;
+
   pixel_fifo_state pf_state;
   BYTE lx;
   BYTE fetched_x;
@@ -54,7 +58,9 @@ struct ppu_context {
   uint32_t video_buffer[YRES][XRES];
   pixel_fifo_ctx pfc;
 
-  std::vector<oam_entry> line_sprites;
+  oam_entry line_sprites[10];
+  int line_sprites_number;
+
   BYTE fetched_objects;
   oam_entry obj_fetched_entry[MAX_CHECKING_SPRITES_ON_PIXEL];
 

@@ -21,9 +21,10 @@ bool window_in_range(){
 
 void transfer_pixels(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
-  if(pfc->pixel_fifo.size() >= 8){
-    uint32_t color = pfc->pixel_fifo.front();
-    pfc->pixel_fifo.pop();
+  if(pfc->pixel_fifo_size >= 8){
+    uint32_t color = pfc->pixel_fifo[pfc->pixel_fifo_head];
+    pfc->pixel_fifo_head = (pfc->pixel_fifo_head + 1) % 16;
+    pfc->pixel_fifo_size--;
 
     BYTE y = lcd_get_context()->ly;
     BYTE x = pfc->pushed_x;
@@ -65,7 +66,7 @@ bool pixel_sprite_color(BYTE color, uint32_t &palette){
 
 bool pixel_fifo_add(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
-  if(pfc->pixel_fifo.size() >= 8) return false;
+  if(pfc->pixel_fifo_size >= 8) return false;
 
   int first_bit = 7;
   if(!pfc->bgw_fetched_is_window && pfc->lx < lcd_get_context()->scx % 8){
@@ -87,7 +88,10 @@ bool pixel_fifo_add(){
 
     if(OBJ_ENABLE) pixel_sprite_color(color, palette);
 
-    pfc->pixel_fifo.push(palette); 
+    pfc->pixel_fifo[pfc->pixel_fifo_tail] = palette;
+    pfc->pixel_fifo_tail = (pfc->pixel_fifo_tail + 1) % 16;
+    pfc->pixel_fifo_size++;
+
     pfc->fetched_x++;
     pfc->lx++;
   }
@@ -98,7 +102,8 @@ void fetch_sprites_entry(){
   ppu_get_context()->fetched_objects = 0;
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
 
-  for(auto &entry : ppu_get_context()->line_sprites){
+  for(int i = 0; i < ppu_get_context()->line_sprites_number; i++){
+    auto &entry = ppu_get_context()->line_sprites[i];
     if(ppu_get_context()->fetched_objects >= MAX_CHECKING_SPRITES_ON_PIXEL) break;
 
     // out of bonds, not visible

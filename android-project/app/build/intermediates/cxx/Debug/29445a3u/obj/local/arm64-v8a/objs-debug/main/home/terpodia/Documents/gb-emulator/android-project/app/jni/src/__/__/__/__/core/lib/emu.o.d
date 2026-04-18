@@ -1,5 +1,6 @@
 /home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj/local/arm64-v8a/objs-debug/main//home/terpodia/Documents/gb-emulator/android-project/app/jni/src/__/__/__/__/core/lib/emu.o: \
   /home/terpodia/Documents/gb-emulator/android-project/app/jni/src/../../../../core/lib/emu.cpp \
+  /home/terpodia/Documents/gb-emulator/android-project/app/jni/src/../../../../core/include/cartridge/save_data.h \
   /home/terpodia/Documents/gb-emulator/android-project/app/jni/src/../../../../core/include/cartridge/cart.h \
   /home/terpodia/Documents/gb-emulator/android-project/app/jni/src/../../../../core/include/common.h \
   /home/terpodia/Android/Sdk/ndk/25.1.8937393/sources/cxx-stl/llvm-libc++/include/stdbool.h \
@@ -80,6 +81,8 @@
   /home/terpodia/Android/Sdk/ndk/25.1.8937393/sources/cxx-stl/llvm-libc++/include/__split_buffer \
   /home/terpodia/Android/Sdk/ndk/25.1.8937393/sources/cxx-stl/llvm-libc++/include/vector \
   /home/terpodia/Documents/gb-emulator/android-project/app/jni/src/../../../../core/include/apu.h
+
+/home/terpodia/Documents/gb-emulator/android-project/app/jni/src/../../../../core/include/cartridge/save_data.h:
 
 /home/terpodia/Documents/gb-emulator/android-project/app/jni/src/../../../../core/include/cartridge/cart.h:
 

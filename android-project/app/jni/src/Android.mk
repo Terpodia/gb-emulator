@@ -9,7 +9,7 @@ SDL_PATH := ../SDL
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include \
                     $(LOCAL_PATH)/../../../../core/include
 
-LOCAL_CPPFLAGS += -fsigned-char -O2
+LOCAL_CPPFLAGS += -fsigned-char -O3 -flto -fomit-frame-pointer -fno-exceptions -fno-rtti -DNDEBUG
 
 # Add your application source files here...
 EMU_ROOT := $(LOCAL_PATH)/../../../..

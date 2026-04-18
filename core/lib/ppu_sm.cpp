@@ -24,20 +24,21 @@ void increment_ly(){
 }
 
 void load_line_sprites(){
-  std::vector<oam_entry> &line_sprites = ppu_get_context()->line_sprites;
-  line_sprites.clear();
+  oam_entry *line_sprites = ppu_get_context()->line_sprites;
+  int &line_sprites_number = ppu_get_context()->line_sprites_number;
+  line_sprites_number = 0;
   for(int i = 0; i < 40; i++){
     // at most 10 sprites per line
-    if(line_sprites.size() >= 10) break;
+    if(line_sprites_number >= 10) break;
 
     BYTE height = LCDS_OBJ_SIZE;
     BYTE ypos = ppu_get_context()->oam[i].y;
     if(ypos > lcd_get_context()->ly + 16) continue;
     if(ypos + height <= lcd_get_context()->ly + 16) continue;
 
-    line_sprites.push_back(ppu_get_context()->oam[i]);
+    line_sprites[line_sprites_number++] = ppu_get_context()->oam[i];
   }
-  std::stable_sort(line_sprites.begin(), line_sprites.end(), [](const oam_entry &a, const oam_entry &b){
+  std::stable_sort(line_sprites, line_sprites + line_sprites_number, [](const oam_entry &a, const oam_entry &b){
     return a.x < b.x;
   });
 }
@@ -49,8 +50,9 @@ void ppu_mode_oam(){
     ppu_get_context()->pfc.lx = 0;
     ppu_get_context()->pfc.pf_state = PFS_GET_TILE;
 
-    while(!ppu_get_context()->pfc.pixel_fifo.empty())
-      ppu_get_context()->pfc.pixel_fifo.pop();
+    ppu_get_context()->pfc.pixel_fifo_head = 0;
+    ppu_get_context()->pfc.pixel_fifo_tail = 0;
+    ppu_get_context()->pfc.pixel_fifo_size = 0;
 
     SET_LCD_MODE(MODE_PIXEL_TRANSFER);
   }
