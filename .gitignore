@@ -4,4 +4,5 @@
 /android-project/build
 /android-project/app/build
 /android-project/.gradle
+/android-project/.idea
 /.vscode
