@@ -1,0 +1,105 @@
+{
+  "buildFiles": [
+    "/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk",
+    "/home/terpodia/Documents/gb-emulator/android-project/app/jni/Application.mk"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/terpodia/Android/Sdk/ndk/25.1.8937393/ndk-build",
+      "NDK_PROJECT_PATH\u003dnull",
+      "APP_BUILD_SCRIPT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk",
+      "NDK_APPLICATION_MK\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Application.mk",
+      "APP_ABI\u003darm64-v8a",
+      "NDK_ALL_ABIS\u003darm64-v8a",
+      "NDK_DEBUG\u003d1",
+      "NDK_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj",
+      "NDK_LIBS_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/lib",
+      "APP_PLATFORM\u003dandroid-19",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/terpodia/Android/Sdk/ndk/25.1.8937393/ndk-build",
+    "NDK_PROJECT_PATH\u003dnull",
+    "APP_BUILD_SCRIPT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk",
+    "NDK_APPLICATION_MK\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Application.mk",
+    "APP_ABI\u003darm64-v8a",
+    "NDK_ALL_ABIS\u003darm64-v8a",
+    "NDK_DEBUG\u003d1",
+    "NDK_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj",
+    "NDK_LIBS_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/lib",
+    "APP_PLATFORM\u003dandroid-19",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "main-debug-arm64-v8a": {
+      "buildCommandComponents": [
+        "/home/terpodia/Android/Sdk/ndk/25.1.8937393/ndk-build",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk",
+        "NDK_APPLICATION_MK\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Application.mk",
+        "APP_ABI\u003darm64-v8a",
+        "NDK_ALL_ABIS\u003darm64-v8a",
+        "NDK_DEBUG\u003d1",
+        "NDK_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj",
+        "NDK_LIBS_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/lib",
+        "APP_PLATFORM\u003dandroid-19",
+        "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj/local/arm64-v8a/libmain.so"
+      ],
+      "toolchain": "toolchain-arm64-v8a",
+      "abi": "arm64-v8a",
+      "artifactName": "main",
+      "output": "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj/local/arm64-v8a/libmain.so"
+    },
+    "SDL2-debug-arm64-v8a": {
+      "buildCommandComponents": [
+        "/home/terpodia/Android/Sdk/ndk/25.1.8937393/ndk-build",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk",
+        "NDK_APPLICATION_MK\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Application.mk",
+        "APP_ABI\u003darm64-v8a",
+        "NDK_ALL_ABIS\u003darm64-v8a",
+        "NDK_DEBUG\u003d1",
+        "NDK_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj",
+        "NDK_LIBS_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/lib",
+        "APP_PLATFORM\u003dandroid-19",
+        "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj/local/arm64-v8a/libSDL2.so"
+      ],
+      "toolchain": "toolchain-arm64-v8a",
+      "abi": "arm64-v8a",
+      "artifactName": "SDL2",
+      "output": "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj/local/arm64-v8a/libSDL2.so"
+    },
+    "cpufeatures-debug-arm64-v8a": {
+      "buildCommandComponents": [
+        "/home/terpodia/Android/Sdk/ndk/25.1.8937393/ndk-build",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk",
+        "NDK_APPLICATION_MK\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Application.mk",
+        "APP_ABI\u003darm64-v8a",
+        "NDK_ALL_ABIS\u003darm64-v8a",
+        "NDK_DEBUG\u003d1",
+        "NDK_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj",
+        "NDK_LIBS_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/lib",
+        "APP_PLATFORM\u003dandroid-19",
+        "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj/local/arm64-v8a/libcpufeatures.a"
+      ],
+      "toolchain": "toolchain-arm64-v8a",
+      "abi": "arm64-v8a",
+      "artifactName": "cpufeatures",
+      "output": "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj/local/arm64-v8a/libcpufeatures.a"
+    }
+  },
+  "toolchains": {
+    "toolchain-arm64-v8a": {
+      "cCompilerExecutable": "/home/terpodia/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang",
+      "cppCompilerExecutable": "/home/terpodia/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

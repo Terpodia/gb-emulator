@@ -1,0 +1,2 @@
+/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk
+/home/terpodia/Documents/gb-emulator/android-project/app/jni/Application.mk

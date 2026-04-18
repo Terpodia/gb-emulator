@@ -1,0 +1,3 @@
+make: Nothing to be done for 'SDL2'.
+[arm64-v8a] Compile++      : main <= android_ui.cpp
+[arm64-v8a] SharedLibrary  : libmain.so

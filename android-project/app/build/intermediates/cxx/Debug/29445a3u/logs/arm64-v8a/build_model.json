@@ -1,0 +1,151 @@
+{
+  "abi": "ARM64_V8A",
+  "info": {
+    "abi": "ARM64_V8A",
+    "bitness": 64,
+    "deprecated": false,
+    "default": true
+  },
+  "cxxBuildFolder": "/home/terpodia/Documents/gb-emulator/android-project/app/build/.cxx/Debug/29445a3u/arm64-v8a",
+  "soFolder": "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj/local/arm64-v8a",
+  "soRepublishFolder": "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/ndkBuild/debug/obj/local/arm64-v8a",
+  "abiPlatformVersion": 19,
+  "variant": {
+    "buildSystemArgumentList": [
+      "APP_PLATFORM\u003dandroid-19"
+    ],
+    "cFlagsList": [],
+    "cppFlagsList": [],
+    "variantName": "debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARM64_V8A"
+    ],
+    "buildTargetSet": [],
+    "implicitBuildTargetSet": [],
+    "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
+    "module": {
+      "cxxFolder": "/home/terpodia/Documents/gb-emulator/android-project/app/build/.cxx",
+      "intermediatesBaseFolder": "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates",
+      "intermediatesFolder": "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "/home/terpodia/Documents/gb-emulator/android-project/app",
+      "moduleBuildFile": "/home/terpodia/Documents/gb-emulator/android-project/app/build.gradle",
+      "makeFile": "/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk",
+      "buildSystem": "NDK_BUILD",
+      "ndkFolder": "/home/terpodia/Android/Sdk/ndk/25.1.8937393",
+      "ndkVersion": "25.1.8937393",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultStl": "SYSTEM",
+      "ndkMetaPlatforms": {
+        "min": 19,
+        "max": 33,
+        "aliases": {
+          "20": 19,
+          "25": 24,
+          "J": 16,
+          "J-MR1": 17,
+          "J-MR2": 18,
+          "K": 19,
+          "L": 21,
+          "L-MR1": 22,
+          "M": 23,
+          "N": 24,
+          "N-MR1": 24,
+          "O": 26,
+          "O-MR1": 27,
+          "P": 28,
+          "Q": 29,
+          "R": 30,
+          "S": 31,
+          "Sv2": 32,
+          "Tiramisu": 33
+        }
+      },
+      "ndkMetaAbiList": [
+        {
+          "abi": "ARMEABI_V7A",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "ARM64_V8A",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86_64",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        }
+      ],
+      "cmakeToolchainFile": "/home/terpodia/Android/Sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake",
+      "stlSharedObjectMap": {
+        "LIBCXX_SHARED": {
+          "ARMEABI_V7A": "/home/terpodia/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so",
+          "ARM64_V8A": "/home/terpodia/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so",
+          "X86": "/home/terpodia/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/i686-linux-android/libc++_shared.so",
+          "X86_64": "/home/terpodia/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so"
+        },
+        "LIBCXX_STATIC": {},
+        "NONE": {},
+        "SYSTEM": {}
+      },
+      "project": {
+        "rootBuildGradleFolder": "/home/terpodia/Documents/gb-emulator/android-project",
+        "sdkFolder": "/home/terpodia/Android/Sdk",
+        "isBuildOnlyTargetAbiEnabled": true,
+        "ideBuildTargetAbi": "arm64-v8a,armeabi-v7a,armeabi",
+        "isCmakeBuildCohabitationEnabled": false,
+        "isPrefabEnabled": false
+      },
+      "outputOptions": [],
+      "hasBuildTimeInformation": true
+    },
+    "prefabClassPaths": [],
+    "prefabPackages": [],
+    "prefabPackageConfigurations": [],
+    "stlType": "c++_shared",
+    "optimizationTag": "Debug"
+  },
+  "buildSettings": {
+    "environmentVariables": []
+  },
+  "prefabFolder": "/home/terpodia/Documents/gb-emulator/android-project/app/build/.cxx/Debug/29445a3u/prefab/arm64-v8a",
+  "isActiveAbi": true,
+  "fullConfigurationHash": "29445a3u1gsv6ejt20i46b2e5b644e6l476h2x6x311d4760155l49z1e",
+  "fullConfigurationHashKey": "# Values used to calculate the hash in this folder name.\n# Should not depend on the absolute path of the project itself.\n#   - AGP: 8.1.1.\n#   - $NDK is the path to NDK 25.1.8937393.\n#   - $PROJECT is the path to the parent folder of the root Gradle build file.\n#   - $ABI is the ABI to be built with. The specific value doesn\u0027t contribute to the value of the hash.\n#   - $HASH is the hash value computed from this text.\nNDK_PROJECT_PATH\u003dnull\nAPP_BUILD_SCRIPT\u003d$PROJECT/app/jni/Android.mk\nNDK_APPLICATION_MK\u003d$PROJECT/app/jni/Application.mk\nAPP_ABI\u003d$ABI\nNDK_ALL_ABIS\u003d$ABI\nNDK_DEBUG\u003d1\nNDK_OUT\u003d$PROJECT/app/build/intermediates/cxx/Debug/$HASH/obj\nNDK_LIBS_OUT\u003d$PROJECT/app/build/intermediates/cxx/Debug/$HASH/lib\nAPP_PLATFORM\u003dandroid-19",
+  "configurationArguments": [
+    "NDK_PROJECT_PATH\u003dnull",
+    "APP_BUILD_SCRIPT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Android.mk",
+    "NDK_APPLICATION_MK\u003d/home/terpodia/Documents/gb-emulator/android-project/app/jni/Application.mk",
+    "APP_ABI\u003darm64-v8a",
+    "NDK_ALL_ABIS\u003darm64-v8a",
+    "NDK_DEBUG\u003d1",
+    "NDK_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/obj",
+    "NDK_LIBS_OUT\u003d/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u/lib",
+    "APP_PLATFORM\u003dandroid-19"
+  ],
+  "stlLibraryFile": "/home/terpodia/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so",
+  "intermediatesParentFolder": "/home/terpodia/Documents/gb-emulator/android-project/app/build/intermediates/cxx/Debug/29445a3u"
+}
