@@ -20,7 +20,7 @@ LOCAL_SRC_FILES := $(wildcard $(EMU_ROOT)/core/lib/*.cpp) \
                    $(wildcard $(EMU_ROOT)/core/lib/cartridge/*.cpp) \
                    $(wildcard $(EMU_ROOT)/platform/android/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := SDL2
+LOCAL_SHARED_LIBRARIES := SDL2 SDL2_image
 
 LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -lOpenSLES -llog -landroid
 

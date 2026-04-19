@@ -13,11 +13,20 @@ enum BUTTONS { KEY_A, KEY_B, KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT, KEY_START, K
 
 struct buttons {
   SDL_Rect key_region[8];
-  std::tuple<BYTE,BYTE,BYTE,BYTE> key_colors[8];
-  std::tuple<BYTE,BYTE,BYTE,BYTE> default_color;
+  SDL_Texture *textures[8];
+
   buttons(){
-    default_color = std::tuple<BYTE,BYTE,BYTE,BYTE>(128, 128, 128, 255);
     untrigger();
+  }
+  void load_buttons_textures(SDL_Renderer *renderer){
+    textures[0] = IMG_LoadTexture(renderer, "button_a.png");
+    textures[1] = IMG_LoadTexture(renderer, "button_b.png");
+    textures[2] = IMG_LoadTexture(renderer, "dpad_up.png");
+    textures[3] = IMG_LoadTexture(renderer, "dpad_down.png");
+    textures[4] = IMG_LoadTexture(renderer, "dpad_right.png");
+    textures[5] = IMG_LoadTexture(renderer, "dpad_left.png");
+    textures[6] = IMG_LoadTexture(renderer, "start.png");
+    textures[7] = IMG_LoadTexture(renderer, "select.png");
   }
   SDL_Rect get_key_region(BUTTONS key){
     return key_region[key];
@@ -29,15 +38,10 @@ struct buttons {
     return x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
   }
   void untrigger(){
-    for(int i = 0; i < 8; i++) key_colors[i] = default_color;
+    for(int i = 0; i < 8; i++) SDL_SetTextureColorMod(textures[i], 255, 255, 255);
   }
   void trigger(int i){
-    auto [r, g, b, a] = default_color;
-    r = r + (255 - r);
-    g = g + (255 - g);
-    b = b + (255 - b);
-
-    key_colors[i] = std::tuple<BYTE,BYTE,BYTE,BYTE>(r, g, b, a);
+    SDL_SetTextureColorMod(textures[i], 180, 180, 180);
   }
   int button_triggered(float x, float y){
     for(int i = 0; i < 8; i++) if(inside(key_region[i], x, y)){
@@ -47,11 +51,8 @@ struct buttons {
     return KEY_NONE;
   }
   void draw(SDL_Renderer *renderer){
-    for(int i = 0; i < 8; i++){
-      auto [r,g,b,a] = key_colors[i];
-      SDL_SetRenderDrawColor(renderer, r, g, b, a);
-      SDL_RenderFillRect(renderer, &key_region[i]);
-    }
+    for(int i = 0; i < 8; i++)
+      SDL_RenderCopy(renderer, textures[i], NULL, &key_region[i]);
   }
 };
 
@@ -69,7 +70,9 @@ SDL_Texture *texture = nullptr;
 SDL_Rect game_viewport;
 SDL_Haptic *vibrator;
 
-buttons joypad;
+SDL_Texture *t = nullptr;
+
+buttons virtual_pad;
 bool button_was_pressed[8];
 
 static uint32_t tile_color[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000};
@@ -90,32 +93,32 @@ void draw_joypad_buttons(){
   r.x = screen_width - screen_width / 30 - buttons_size;
   r.y = screen_height - (pad_height * 60) / 100 - buttons_size;
   r.w = r.h = buttons_size;
-  joypad.set_key_region(KEY_A, r);
+  virtual_pad.set_key_region(KEY_A, r);
 
-  r.x = joypad.get_key_region(KEY_A).x - buttons_size;
+  r.x = virtual_pad.get_key_region(KEY_A).x - buttons_size;
   r.y = screen_height - (pad_height * 30) / 100 - buttons_size;
   r.w = r.h = buttons_size;
-  joypad.set_key_region(KEY_B, r);
+  virtual_pad.set_key_region(KEY_B, r);
 
   r.x = screen_width / 30 + buttons_size;
   r.y = screen_height - (pad_height * 60) / 100 - buttons_size;
   r.w = r.h = buttons_size;
-  joypad.set_key_region(KEY_UP, r);
+  virtual_pad.set_key_region(KEY_UP, r);
 
   r.x = screen_width / 30 + buttons_size;
-  r.y = joypad.get_key_region(KEY_UP).y + buttons_size * 2;
+  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size * 2;
   r.w = r.h = buttons_size;
-  joypad.set_key_region(KEY_DOWN, r);
+  virtual_pad.set_key_region(KEY_DOWN, r);
 
   r.x = screen_width / 30;
-  r.y = joypad.get_key_region(KEY_UP).y + buttons_size;
+  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size;
   r.w = r.h = buttons_size;
-  joypad.set_key_region(KEY_LEFT, r);
+  virtual_pad.set_key_region(KEY_LEFT, r);
 
   r.x = screen_width / 30 + buttons_size * 2;
-  r.y = joypad.get_key_region(KEY_UP).y + buttons_size;
+  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size;
   r.w = r.h = buttons_size;
-  joypad.set_key_region(KEY_RIGHT, r);
+  virtual_pad.set_key_region(KEY_RIGHT, r);
 
   pad_height = game_viewport.y;
 
@@ -123,15 +126,15 @@ void draw_joypad_buttons(){
   r.y = (pad_height - buttons_size / 2) / 2;
   r.w = buttons_size * 2;
   r.h = buttons_size / 2;
-  joypad.set_key_region(KEY_SELECT, r);
+  virtual_pad.set_key_region(KEY_SELECT, r);
 
   r.x = (screen_width - buttons_size * 2) / 2 + buttons_size * 2;
   r.y = (pad_height - buttons_size / 2) / 2;
   r.w = buttons_size * 2;
   r.h = buttons_size / 2;
-  joypad.set_key_region(KEY_START, r);
+  virtual_pad.set_key_region(KEY_START, r);
 
-  joypad.draw(renderer);
+  virtual_pad.draw(renderer);
 }
 
 void platform_render_update(){
@@ -173,6 +176,13 @@ void platform_init(){
       }
     }
   }
+  if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)){
+    SDL_Log("IMG_Init error: %s", IMG_GetError());
+    SDL_Quit();
+    exit(-5);
+  }
+
+  virtual_pad.load_buttons_textures(renderer);
 }
 
 void handle_android_touch(SDL_Event *e){
@@ -185,7 +195,7 @@ void handle_android_touch(SDL_Event *e){
   joypad_get_context()->state.start = false;
   joypad_get_context()->state.select = false;
 
-  joypad.untrigger();
+  virtual_pad.untrigger();
 
   bool button_pressed[8];
   for(int i = 0; i < 8; i++) button_pressed[i] = false;
@@ -194,7 +204,7 @@ void handle_android_touch(SDL_Event *e){
   int num_fingers = SDL_GetNumTouchFingers(touch_id);
   for(int i = 0; i < num_fingers; i++){
     SDL_Finger *finger = SDL_GetTouchFinger(touch_id, i);
-    int button = joypad.button_triggered(finger->x * screen_width, finger->y * screen_height);
+    int button = virtual_pad.button_triggered(finger->x * screen_width, finger->y * screen_height);
     button_pressed[button] = true;
     switch(button){
       case KEY_A: joypad_get_context()->state.a = true; break;
