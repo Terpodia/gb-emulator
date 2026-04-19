@@ -5,8 +5,10 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := main
 
 SDL_PATH := ../SDL
+SDL_IMAGE_PATH := ../SDL2_image-2.8.6/
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include \
+                    $(LOCAL_PATH)/$(SDL_IMAGE_PATH)/include \
                     $(LOCAL_PATH)/../../../../core/include
 
 LOCAL_CPPFLAGS += -fsigned-char -O3 -flto -fomit-frame-pointer -fno-exceptions -fno-rtti -DNDEBUG

@@ -1,4 +1,4 @@
-#include <SDL_ttf.h>
+#include <SDL_image.h>
 #include <SDL.h>
 #include <SDL_log.h>
 #include "platform.h"
