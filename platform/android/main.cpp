@@ -1,5 +1,5 @@
 #include "emu.h"
-#include <SDL.h>
+#include <SDL3/SDL_main.h>
 
 int main(int argc, char **argv) {
   int a = 2;
