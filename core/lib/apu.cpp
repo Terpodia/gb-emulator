@@ -314,7 +314,7 @@ void apu_tick(){
 
   fill_audio_buffer();
 
-  if(ctx.audio_buffer_index == SAMPLE_SIZE){
+  if(ctx.audio_buffer_index >= SAMPLE_SIZE){
     platform_audio_queue(ctx.audio_buffer, SAMPLE_SIZE);
     ctx.audio_buffer_index = 0;
   } 
