@@ -160,9 +160,8 @@ void platform_render_update(){
 }
 
 void platform_init(){
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_HAPTIC);
-
   SDL_SetHint(SDL_HINT_ORIENTATIONS, "Portrait");
+
   SDL_CreateWindowAndRenderer("gbemu", 0, 0, SDL_WINDOW_FULLSCREEN, &window, &renderer);
 
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, XRES, YRES);
