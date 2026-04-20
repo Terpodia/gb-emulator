@@ -2,7 +2,7 @@
 
 #include <common.h>
 
-#define SAMPLE_SIZE 1024 * 4
+#define SAMPLE_SIZE 1024
 
 struct apu_context {
   BYTE audio_master_control;

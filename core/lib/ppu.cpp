@@ -22,27 +22,18 @@ void ppu_init(){
   memset(ctx.vram, 0, sizeof(ctx.vram));
 }
 
-static uint64_t prev_frame_time;
-static uint64_t target_frame_time = 1000/60;
 static uint64_t frame_count;
 static uint64_t start_timer;
 
 void frame_rate_update(){
   uint64_t current_frame_time = get_ticks();
 
-  if(current_frame_time - prev_frame_time < target_frame_time){
-    uint64_t delta = target_frame_time - (current_frame_time - prev_frame_time);
-    delay(delta);
-    prev_frame_time = current_frame_time + delta;
-  }
-  else prev_frame_time = current_frame_time;
-
   frame_count++;
   ppu_get_context()->current_frame++;
 
-  if(prev_frame_time - start_timer >= 1000){
+  if(current_frame_time - start_timer >= 1000){
     std::cout << "FPS: " << frame_count << "\n";
-    start_timer = prev_frame_time;
+    start_timer = current_frame_time;
     frame_count = 0;
   }
 }
