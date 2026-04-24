@@ -20,8 +20,10 @@ BYTE io_read(WORD address){
 
   if(address >= 0xFF40 && address <= 0xFF4B) return lcd_read(address);
 
+  /*
   std::cout << "I/O Register Not suported yet\n";
   std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
+  */
 
   return 0;
 }
@@ -51,7 +53,8 @@ void io_write(WORD address, BYTE value){
     lcd_write(address, value);
     return;
   }
-
+  /*
   std::cout << "I/O Register Not suported yet\n";
   std::cout << "Accessing: " << std::hex << address << std::dec << "\n";
+  */
 }

@@ -25,7 +25,8 @@ bool read_rom_file(char *cart_path, cart_context &ctx) {
   fclose(fp);
 
   ctx.header = (rom_header *)(ctx.rom_data + 0x100);
-  ctx.header->title[15] = 0;
 
+  ctx.cgb_mode = ctx.header->title[15];
+  ctx.header->title[15] = 0;
   return true;
 }

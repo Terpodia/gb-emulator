@@ -7,7 +7,7 @@
 #include "bus.h"
 #include "ppu.h"
 #include "apu.h"
-#include <tuple>
+#include <vector>
 
 enum BUTTONS { KEY_A, KEY_B, KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT, KEY_START, KEY_SELECT, KEY_NONE };
 
@@ -43,12 +43,13 @@ struct buttons {
   void trigger(int i){
     SDL_SetTextureColorMod(textures[i], 180, 180, 180);
   }
-  int button_triggered(float x, float y){
+  std::vector<int> button_triggered(float x, float y){
+    std::vector<int> buttons;
     for(int i = 0; i < 8; i++) if(inside(key_region[i], x, y)){
+      buttons.push_back(i);
       trigger(i);
-      return i;
     }
-    return KEY_NONE;
+    return buttons;
   }
   void draw(SDL_Renderer *renderer){
     for(int i = 0; i < 8; i++)
@@ -91,32 +92,32 @@ void draw_joypad_buttons(){
   SDL_FRect r;
 
   r.x = screen_width - screen_width / 30 - buttons_size;
-  r.y = screen_height - (pad_height * 60) / 100 - buttons_size;
+  r.y = screen_height - (pad_height + buttons_size) / 2;
   r.w = r.h = buttons_size;
   virtual_pad.set_key_region(KEY_A, r);
 
-  r.x = virtual_pad.get_key_region(KEY_A).x - buttons_size;
-  r.y = screen_height - (pad_height * 30) / 100 - buttons_size;
+  r.x = virtual_pad.get_key_region(KEY_A).x - buttons_size / 1.6f;
+  r.y = virtual_pad.get_key_region(KEY_A).y + buttons_size / 1.6f;
   r.w = r.h = buttons_size;
   virtual_pad.set_key_region(KEY_B, r);
 
-  r.x = screen_width / 30 + buttons_size;
+  r.x = screen_width / 30 + buttons_size * 0.8;
   r.y = screen_height - (pad_height * 60) / 100 - buttons_size;
   r.w = r.h = buttons_size;
   virtual_pad.set_key_region(KEY_UP, r);
 
-  r.x = screen_width / 30 + buttons_size;
-  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size * 2;
+  r.x = screen_width / 30 + buttons_size * 0.8;
+  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size * 2 * 0.8;
   r.w = r.h = buttons_size;
   virtual_pad.set_key_region(KEY_DOWN, r);
 
   r.x = screen_width / 30;
-  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size;
+  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size * 0.8;
   r.w = r.h = buttons_size;
   virtual_pad.set_key_region(KEY_LEFT, r);
 
-  r.x = screen_width / 30 + buttons_size * 2;
-  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size;
+  r.x = screen_width / 30 + buttons_size * 2 * 0.8;
+  r.y = virtual_pad.get_key_region(KEY_UP).y + buttons_size * 0.8;
   r.w = r.h = buttons_size;
   virtual_pad.set_key_region(KEY_RIGHT, r);
 
@@ -205,17 +206,19 @@ void handle_android_touch(SDL_Event *e){
 
   for(int i = 0; i < num_fingers; i++){
     SDL_Finger *finger = fingers[i];
-    int button = virtual_pad.button_triggered(finger->x * screen_width, finger->y * screen_height);
-    button_pressed[button] = true;
-    switch(button){
-      case KEY_A: joypad_get_context()->state.a = true; break;
-      case KEY_B: joypad_get_context()->state.b = true; break;
-      case KEY_UP: joypad_get_context()->state.up = true; break;
-      case KEY_LEFT: joypad_get_context()->state.left = true; break;
-      case KEY_DOWN: joypad_get_context()->state.down = true; break;
-      case KEY_RIGHT: joypad_get_context()->state.right = true; break;
-      case KEY_START: joypad_get_context()->state.start = true; break;
-      case KEY_SELECT: joypad_get_context()->state.select = true; break;
+    std::vector<int> buttons = virtual_pad.button_triggered(finger->x * screen_width, finger->y * screen_height);
+    for(auto button : buttons){
+      button_pressed[button] = true;
+      switch(button){
+        case KEY_A: joypad_get_context()->state.a = true; break;
+        case KEY_B: joypad_get_context()->state.b = true; break;
+        case KEY_UP: joypad_get_context()->state.up = true; break;
+        case KEY_LEFT: joypad_get_context()->state.left = true; break;
+        case KEY_DOWN: joypad_get_context()->state.down = true; break;
+        case KEY_RIGHT: joypad_get_context()->state.right = true; break;
+        case KEY_START: joypad_get_context()->state.start = true; break;
+        case KEY_SELECT: joypad_get_context()->state.select = true; break;
+      }
     }
   }
   bool vibrate = false;

@@ -37,6 +37,7 @@ struct cart_context {
   BYTE current_rtc_register;
   BYTE rtc_register[5];
 
+  bool cgb_mode;
   bool ram_enabled;
   bool bank_mode;
   bool should_save_battery;

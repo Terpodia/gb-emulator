@@ -49,6 +49,7 @@ void print_cart_header(cart_context &ctx) {
             << std::hex;
   std::cout << "\t RAM SIZE    : " << (int)ctx.header->ram_size << "\n";
   std::cout << "\t ROM VERSION : " << (int)ctx.header->version << "\n";
+  std::cout << "\t CGB MODE    : " << (ctx.cgb_mode ? "Yes" : "No") << "\n";
   print_checksum(ctx);
   std::cout << std::dec;
 }
