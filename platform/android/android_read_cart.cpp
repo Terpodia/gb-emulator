@@ -24,6 +24,7 @@ bool read_rom_file(char *cart_path, cart_context &ctx) {
   SDL_CloseIO(rom);
 
   ctx.header = (rom_header *)(ctx.rom_data + 0x100);
+  ctx.cgb_mode = ctx.header->title[15];
   ctx.header->title[15] = 0;
 
   SDL_Log("%s", ctx.header->title);

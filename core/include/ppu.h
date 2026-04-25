@@ -16,7 +16,7 @@ struct oam_entry {
   BYTE x;
   BYTE tile_index;
   BYTE cgb_palette : 3;
-  BYTE vram_back : 1;
+  BYTE vram_bank : 1;
   BYTE dmg_palette : 1;
   BYTE x_flip : 1;
   BYTE y_flip : 1;
@@ -46,14 +46,19 @@ struct pixel_fifo_ctx {
   BYTE tile_y;
 
   BYTE bgw_fetched_data[3];
+  BYTE bgw_attribute;
   BYTE obj_fetched_data[MAX_CHECKING_SPRITES_ON_PIXEL * 2];
 
   bool bgw_fetched_is_window;
 };
 
 struct ppu_context {
+  bool cgb_mode;
+
   oam_entry oam[40];
-  BYTE vram[0x2000];
+  BYTE vram[2][0x2000];
+
+  BYTE vram_current_bank;
 
   uint32_t video_buffer[YRES][XRES];
   pixel_fifo_ctx pfc;
@@ -72,7 +77,7 @@ struct ppu_context {
 
 ppu_context *ppu_get_context();
 
-void ppu_init();
+void ppu_init(bool cgb_mode);
 
 void frame_rate_update();
 
@@ -83,3 +88,6 @@ void ppu_oam_write(WORD address, BYTE value);
 
 BYTE ppu_vram_read(WORD address);
 void ppu_vram_write(WORD address, BYTE value);
+
+BYTE ppu_get_vram_bank();
+void ppu_set_vram_bank(BYTE bank_number);

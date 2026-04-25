@@ -34,7 +34,57 @@ void transfer_pixels(){
   }
 }
 
-bool pixel_sprite_color(BYTE color, uint32_t &palette){
+uint32_t get_bgw_palette(BYTE color){
+  if(!ppu_get_context()->cgb_mode){ 
+    if(!BGW_ENABLE) color = 0;
+    return lcd_get_context()->dmg_bg_colors[color];
+  }
+  
+  pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
+  int palette_index = pfc->bgw_attribute & 0x7;
+  int color_index = palette_index * 4 * 2 + color * 2;
+
+  WORD color_rgb5 = 0;
+  color_rgb5 += (WORD)lcd_get_context()->cgb_bg_palette[color_index];
+  color_rgb5 += (WORD)lcd_get_context()->cgb_bg_palette[color_index + 1] << 8;
+
+  uint32_t r = color_rgb5 & 0x1F;
+  uint32_t g = (color_rgb5 >> 5) & 0x1F;
+  uint32_t b = (color_rgb5 >> 10) & 0x1F;
+
+  r = (r << 3) | (r >> 2);
+  g = (g << 3) | (g >> 2);
+  b = (b << 3) | (b >> 2);
+
+  return (0xFF << 24) | (r << 16) | (g << 8) | b;
+}
+
+uint32_t get_obj_palette(oam_entry *sprite_entry, BYTE sprite_color){
+  if(!ppu_get_context()->cgb_mode){
+    if(!sprite_entry->dmg_palette) 
+      return lcd_get_context()->dmg_sp1_colors[sprite_color];
+
+    return lcd_get_context()->dmg_sp2_colors[sprite_color];
+  }
+
+  int palette_index = sprite_entry->cgb_palette & 0x7;
+  int color_index = palette_index * 4 * 2 + sprite_color * 2;
+  WORD color_rgb5 = 0;
+  color_rgb5 += (WORD)lcd_get_context()->cgb_obj_palette[color_index];
+  color_rgb5 += (WORD)lcd_get_context()->cgb_obj_palette[color_index + 1] << 8;
+
+  uint32_t r = color_rgb5 & 0x1F;
+  uint32_t g = (color_rgb5 >> 5) & 0x1F;
+  uint32_t b = (color_rgb5 >> 10) & 0x1F;
+
+  r = (r << 3) | (r >> 2);
+  g = (g << 3) | (g >> 2);
+  b = (b << 3) | (b >> 2);
+
+  return (0xFF << 24) | (r << 16) | (g << 8) | b;
+}
+
+void pixel_sprite_color(BYTE color, uint32_t &palette){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   for(int i = 0; i < ppu_get_context()->fetched_objects; i++){
     oam_entry entry = ppu_get_context()->obj_fetched_entry[i];
@@ -52,16 +102,16 @@ bool pixel_sprite_color(BYTE color, uint32_t &palette){
     BYTE hi = BIT(pfc->obj_fetched_data[i * 2 + 1], bit);
 
     BYTE sprite_color = (hi << 1) | lo;
+
     if(sprite_color == 0) continue; // transparent
+
+    bool flag = entry.priority || BIT(pfc->bgw_attribute, 7);
     
-    if(entry.priority && color != 0) continue;
+    if(color != 0 && flag && BGW_ENABLE) continue;
 
-    if(!entry.dmg_palette) palette = lcd_get_context()->sp1_colors[sprite_color];
-    else palette = lcd_get_context()->sp2_colors[sprite_color];
-
-    return true;
+    palette = get_obj_palette(&entry, sprite_color);
+    return;
   }
-  return false;
 }
 
 bool pixel_fifo_add(){
@@ -82,9 +132,7 @@ bool pixel_fifo_add(){
     BYTE hi = BIT(pfc->bgw_fetched_data[2], x);
     BYTE color = (hi << 1) | lo;
 
-    if(!BGW_ENABLE) color = 0;
-
-    uint32_t palette = lcd_get_context()->bg_colors[color];
+    uint32_t palette = get_bgw_palette(color);
 
     if(OBJ_ENABLE) pixel_sprite_color(color, palette);
 
@@ -135,50 +183,70 @@ void fetch_sprites_color(BYTE offset){
     WORD address = 0x8000;
     address += tile_index * 16 + sprite_y + offset;
 
-    pfc->obj_fetched_data[i * 2 + offset] = bus_read(address);
+    if(!ppu_get_context()->cgb_mode) entry.vram_bank = 0;
+
+    pfc->obj_fetched_data[i * 2 + offset] = ppu_get_context()->vram[entry.vram_bank][address - 0x8000];
   }
 }
 
-void fetch_window_tile(){
-  if(!window_in_range()) return;
+void fetch_bgw_tile(){
+  pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
+  
+  WORD address = 0;
 
+  if(window_in_range()){
+    address = WIN_TILE_MAP_AREA;
+    address += (pfc->fetched_x + 7 - lcd_get_context()->wx) / 8;
+    address += (ppu_get_context()->window_line / 8) * 32;
+    pfc->bgw_fetched_is_window = true;
+  }
+  else{
+    address = BG_TILE_MAP_AREA;
+    address += pfc->map_x / 8;
+    address += ((WORD)pfc->map_y / 8) * 32;
+    pfc->bgw_fetched_is_window = false;
+  }
+
+  pfc->bgw_fetched_data[0] = ppu_get_context()->vram[0][address - 0x8000];
+  pfc->bgw_attribute = ppu_get_context()->vram[1][address - 0x8000];
+
+  if(BGW_TILE_DATA_AREA == 0x8800) pfc->bgw_fetched_data[0] += 128;
+}
+
+void fetch_tile_data(BYTE idx){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
 
-  WORD address = WIN_TILE_MAP_AREA;
-  address += (pfc->fetched_x + 7 - lcd_get_context()->wx) / 8;
-  address += (ppu_get_context()->window_line / 8) * 32;
+  int bank = BIT(pfc->bgw_attribute, 3);
+  int x_flip = BIT(pfc->bgw_attribute, 5);
+  int y_flip = BIT(pfc->bgw_attribute, 6);
 
-  pfc->bgw_fetched_data[0] = bus_read(address);
-  if(BGW_TILE_DATA_AREA == 0x8800) pfc->bgw_fetched_data[0] += 128;
+  WORD address = BGW_TILE_DATA_AREA;
 
-  pfc->bgw_fetched_is_window = true;
+  if(!y_flip) address += (WORD)pfc->bgw_fetched_data[0] * 16 + pfc->tile_y + idx - 1;
+  else address += (WORD)(pfc->bgw_fetched_data[0] + 1) * 16 - pfc->tile_y + idx - 3;
+
+  pfc->bgw_fetched_data[idx] = ppu_get_context()->vram[bank][address - 0x8000];
+
+  if(x_flip){
+    BYTE temp = pfc->bgw_fetched_data[idx];
+    for(int b = 0; b < 8; b++){
+      int val = BIT(temp, 7-b);
+      BIT_SET(pfc->bgw_fetched_data[idx], b, val);
+    }
+  }
 }
 
 void pixel_fifo_fetch(){
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
   switch(pfc->pf_state){
-    case PFS_GET_TILE:{
-      pfc->bgw_fetched_is_window = false;
-
-      WORD address = BG_TILE_MAP_AREA;
-      address += pfc->map_x / 8;
-      address += ((WORD)pfc->map_y / 8) * 32;
-      pfc->bgw_fetched_data[0] = bus_read(address);
-      if(BGW_TILE_DATA_AREA == 0x8800) pfc->bgw_fetched_data[0] += 128;
-
-      fetch_window_tile();
+    case PFS_GET_TILE:
+      fetch_bgw_tile();
       fetch_sprites_entry();
-
       pfc->pf_state = PFS_GET_TILE_DATA_LOW;
-
       break;
-    }
 
     case PFS_GET_TILE_DATA_LOW:{
-      WORD address = BGW_TILE_DATA_AREA;
-      address += (WORD)pfc->bgw_fetched_data[0] * 16 + pfc->tile_y;
-      pfc->bgw_fetched_data[1] = bus_read(address);
-
+      fetch_tile_data(1);
       fetch_sprites_color(0);
 
       pfc->pf_state = PFS_GET_TILE_DATA_HIGH;
@@ -186,10 +254,7 @@ void pixel_fifo_fetch(){
     }
 
     case PFS_GET_TILE_DATA_HIGH:{
-      WORD address = BGW_TILE_DATA_AREA;
-      address += (WORD)pfc->bgw_fetched_data[0] * 16 + pfc->tile_y + 1;
-      pfc->bgw_fetched_data[2] = bus_read(address);
-
+      fetch_tile_data(2);
       fetch_sprites_color(1);
 
       pfc->pf_state = PFS_SLEEP;

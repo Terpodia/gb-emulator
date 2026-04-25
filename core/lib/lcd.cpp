@@ -3,7 +3,7 @@
 #include "ppu.h"
 #include "ppu_sm.h"
 
-static uint32_t default_color[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000};
+static uint32_t dmg_default_color[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000};
 
 static lcd_context ctx;
 
@@ -11,7 +11,7 @@ lcd_context *lcd_get_context() {
   return &ctx;
 }
 
-void lcd_init(){
+void lcd_init(BYTE cgb_mode){
   ctx.lcdc = 0x91;
   ctx.scx = 0;
   ctx.scy = 0;
@@ -23,11 +23,12 @@ void lcd_init(){
   ctx.wy = 0;
   ctx.wx = 0;
   for(int i=0; i<4; i++){
-    ctx.bg_colors[i] = default_color[i];
-    ctx.sp1_colors[i] = default_color[i];
-    ctx.sp2_colors[i] = default_color[i];
+    ctx.dmg_bg_colors[i] = dmg_default_color[i];
+    ctx.dmg_sp1_colors[i] = dmg_default_color[i];
+    ctx.dmg_sp2_colors[i] = dmg_default_color[i];
   }
   ctx.off_clock = 0;
+  ctx.object_priority_mode = !cgb_mode;
 }
 
 BYTE lcd_read(WORD address){
@@ -37,13 +38,13 @@ BYTE lcd_read(WORD address){
   return value;
 }
 
-void update_palette(WORD address, BYTE pal){
-  uint32_t *colors = ctx.bg_colors;
-  if(address == 0xFF48) colors = ctx.sp1_colors;
-  else if(address == 0xFF49) colors = ctx.sp2_colors;
+void dmg_update_palette(WORD address, BYTE pal){
+  uint32_t *colors = ctx.dmg_bg_colors;
+  if(address == 0xFF48) colors = ctx.dmg_sp1_colors;
+  else if(address == 0xFF49) colors = ctx.dmg_sp2_colors;
 
   for(int i=0; i<4; i++){
-    colors[i] = default_color[pal & 0b11];
+    colors[i] = dmg_default_color[pal & 0b11];
     pal >>= 2;
   }
 }
@@ -65,11 +66,54 @@ void lcd_write(WORD address, BYTE value){
     return;
   }
   if(address == 0xFF46) dma_start(value);
-  if(address == 0xFF47) update_palette(address, value);
+  if(address == 0xFF47) dmg_update_palette(address, value);
   if(address == 0xFF48 || address == 0xFF49)
-    update_palette(address, value & 0b11111100);
+    dmg_update_palette(address, value & 0b11111100);
 
   BYTE *p = (BYTE *)&ctx;
   p[address - 0xFF40] = value;
 }
 
+BYTE lcd_cgb_read(WORD address){
+  switch(address){
+    case 0xFF68: 
+      return ctx.bcps;
+
+    case 0xFF69: 
+      return ctx.cgb_bg_palette[ctx.bcps & 0x3F];
+
+    case 0xFF6A:
+      return ctx.ocps;
+
+    case 0xFF6B:
+      return ctx.cgb_obj_palette[ctx.ocps & 0x3F];
+  }
+  return 0xFF;
+}
+void lcd_cgb_write(WORD address, BYTE value){
+  switch(address){
+    case 0xFF68: 
+      ctx.bcps = value;
+      break;
+
+    case 0xFF69: 
+      ctx.cgb_bg_palette[ctx.bcps & 0x3F] = value;
+      if(BIT(ctx.bcps, 7)){
+        ctx.bcps = (ctx.bcps & 0x3F) + 1;
+        ctx.bcps &= 0x3F, ctx.bcps |= 1<<7;
+      }
+      break;
+
+    case 0xFF6A:
+      ctx.ocps = value;
+      break;
+
+    case 0xFF6B:
+      ctx.cgb_obj_palette[ctx.ocps & 0x3F] = value;
+      if(BIT(ctx.ocps, 7)){
+        ctx.ocps = (ctx.ocps & 0x3F) + 1;
+        ctx.ocps &= 0x3F, ctx.ocps |= 1<<7;
+      }
+      break;
+  }
+}

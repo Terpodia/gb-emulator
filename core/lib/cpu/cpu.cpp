@@ -7,6 +7,7 @@
 #include "dma.h"
 #include "interrupts.h"
 #include "timer.h"
+#include "cartridge/cart.h"
 #include <iomanip>
 
 cpu_context ctx;
@@ -26,10 +27,20 @@ void cpu_init() {
   ctx.interrupt_enable_register = 0;
   ctx.interrupt_flag = 0;
 
-  timer_init();
-  ppu_init();
-  apu_init();
+  if(cart_get_context()->cgb_mode){
+    ctx.cpu_regs.a = 0x11;
+    ctx.cpu_regs.f = 0x80;
+    ctx.cpu_regs.b = 0x00;
+    ctx.cpu_regs.c = 0x00;
+    ctx.cpu_regs.d = 0xFF;
+    ctx.cpu_regs.e = 0x56;
+    ctx.cpu_regs.h = 0x00;
+    ctx.cpu_regs.l = 0x0D;
+  }
 
+  timer_init();
+  ppu_init(cart_get_context()->cgb_mode);
+  apu_init();
 }
 
 static void fetch_instruction() {

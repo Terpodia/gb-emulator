@@ -15,9 +15,17 @@ struct lcd_context {
   BYTE wy;
   BYTE wx;
 
-  uint32_t bg_colors[4];
-  uint32_t sp1_colors[4];
-  uint32_t sp2_colors[4];
+  BYTE bcps;
+  BYTE cgb_bg_palette[64];
+
+  BYTE ocps;
+  BYTE cgb_obj_palette[64];
+
+  BYTE object_priority_mode;
+
+  uint32_t dmg_bg_colors[4];
+  uint32_t dmg_sp1_colors[4];
+  uint32_t dmg_sp2_colors[4];
 
   uint32_t off_clock;
 };
@@ -59,7 +67,10 @@ lcd_context *lcd_get_context();
 
 #define LCDS_OBJ_SIZE (BIT(lcd_get_context()->lcdc, 2) ? 16 : 8)
 
-void lcd_init();
+void lcd_init(BYTE cgb_mode);
 
 BYTE lcd_read(WORD address);
 void lcd_write(WORD address, BYTE value);
+
+BYTE lcd_cgb_read(WORD address);
+void lcd_cgb_write(WORD address, BYTE value);

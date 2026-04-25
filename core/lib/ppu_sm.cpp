@@ -38,9 +38,12 @@ void load_line_sprites(){
 
     line_sprites[line_sprites_number++] = ppu_get_context()->oam[i];
   }
-  std::stable_sort(line_sprites, line_sprites + line_sprites_number, [](const oam_entry &a, const oam_entry &b){
-    return a.x < b.x;
-  });
+
+  if(lcd_get_context()->object_priority_mode){
+    std::stable_sort(line_sprites, line_sprites + line_sprites_number, [](const oam_entry &a, const oam_entry &b){
+      return a.x < b.x;
+    });
+  }
 }
 
 void ppu_mode_oam(){
