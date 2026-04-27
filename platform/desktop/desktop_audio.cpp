@@ -50,7 +50,7 @@ void platform_audio_init(int samples_size){
 }
 
 void platform_audio_queue(float *samples, int samples_size){
-  int target_queue_bytes = samples_size * 16;
+  int target_queue_bytes = samples_size * 32;
   while(SDL_GetAudioStreamQueued(stream) > target_queue_bytes * sizeof(float))
     SDL_Delay(1);
 

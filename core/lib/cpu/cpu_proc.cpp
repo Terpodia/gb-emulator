@@ -486,7 +486,7 @@ void proc_STOP(){
     }
     else ctx.speed_mode = NORMAL_SPEED_MODE;
   }
-  // std::cout << "STOPPING...\n";
+  //std::cout << "STOPPING...\n";
 }
 
 void setup_instruction_processor(){

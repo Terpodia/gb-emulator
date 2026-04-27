@@ -39,7 +39,7 @@ void hdma_trigger_transfer(BYTE value){
     hdma_ctx.transferring = false;
     return;
   }
-  
+
   if(BIT(value, 7)) hdma_ctx.mode = HBLANK_DMA;
   else hdma_ctx.mode = GENERAL_PURPOSE_DMA;
 
