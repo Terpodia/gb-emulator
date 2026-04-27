@@ -16,6 +16,10 @@ struct cpu_registers {
   WORD sp;
 };
 
+enum cpu_speed_mode {
+  NORMAL_SPEED_MODE, DOUBLE_SPEED_MODE
+};
+
 struct cpu_context {
   cpu_registers cpu_regs;
 
@@ -32,6 +36,9 @@ struct cpu_context {
   bool destination_is_memory;
   bool halted;
   bool stepping;
+
+  cpu_speed_mode speed_mode;
+  BYTE speed_switch_register;
 };
 
 #define CPU_FLAG_Z BIT(ctx.cpu_regs.f, 7)
@@ -60,3 +67,6 @@ void cpu_write_interrupt_enable_register(BYTE value);
 
 BYTE cpu_read_interrupt_flag();
 void cpu_write_interrupt_flag(BYTE value);
+
+BYTE speed_mode();
+void prepare_speed_switch(BYTE value);

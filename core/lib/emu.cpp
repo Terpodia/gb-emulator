@@ -3,21 +3,31 @@
 #include "platform.h"
 #include "serial.h"
 #include "timer.h"
+#include "hdma.h"
 #include "cpu.h"
 #include "emu.h"
 #include "dma.h"
 #include "ppu.h"
 #include "apu.h"
 
-static emu_context ctx;
+static emu_context emu_ctx;
+
+extern cpu_context ctx;
 
 void emu_cycles(int cpu_cycles) {
   for(int i=0; i<cpu_cycles; i++){
     for(int j=0; j<4; j++){
-      ctx.ticks++;
-      timer_tick();
       ppu_tick();
       apu_tick();
+    }
+    hdma_tick();
+  }
+
+  if(ctx.speed_mode == DOUBLE_SPEED_MODE) cpu_cycles *= 2;
+
+  for(int i=0; i<cpu_cycles; i++){
+    for(int j=0; j<4; j++){
+      timer_tick();
       serial_tick();
     }
     dma_tick();
@@ -25,7 +35,7 @@ void emu_cycles(int cpu_cycles) {
 }
 
 emu_context *emu_get_context() {
-  return &ctx;
+  return &emu_ctx;
 }
 
 int emu_run(int argc, char **argv) {
@@ -45,7 +55,7 @@ int emu_run(int argc, char **argv) {
   platform_init();
   cpu_init();
   uint64_t frame = 0;
-  while (!ctx.quit) {
+  while (!emu_ctx.quit) {
     //cpu_log();
     if(!cpu_step()){
       std::cout << "CPU Stopped\n";

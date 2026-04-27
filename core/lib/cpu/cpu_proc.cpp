@@ -478,7 +478,15 @@ void proc_EI(){
 }
 
 void proc_STOP(){
-  std::cout << "STOPPING...\n";
+  if(ctx.speed_switch_register & 1){
+    ctx.speed_switch_register = 0;
+    if(ctx.speed_mode == NORMAL_SPEED_MODE){
+      ctx.speed_mode = DOUBLE_SPEED_MODE;
+      ctx.speed_switch_register = 1 << 7;
+    }
+    else ctx.speed_mode = NORMAL_SPEED_MODE;
+  }
+  // std::cout << "STOPPING...\n";
 }
 
 void setup_instruction_processor(){

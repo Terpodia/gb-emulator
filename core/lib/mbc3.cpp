@@ -61,7 +61,7 @@ void mbc3_write(WORD address, BYTE value){
   else if(address >= 0x2000 && address <= 0x3FFF){
     int offset = value & 0x7F;
     if(!offset) offset++;
-    offset &= (1 << (ctx->header->rom_size + 2)) - 1;
+    offset &= (1 << (ctx->header->rom_size + 1)) - 1;
     ctx->current_rom_bank = ctx->rom_data + 0x4000 * offset;
   }
   else if(address >= 0x4000 && address <= 0x5FFF){

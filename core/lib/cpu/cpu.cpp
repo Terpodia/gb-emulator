@@ -4,6 +4,7 @@
 #include "ppu.h"
 #include "dma.h"
 #include "apu.h"
+#include "hdma.h"
 #include "dma.h"
 #include "interrupts.h"
 #include "timer.h"
@@ -41,6 +42,13 @@ void cpu_init() {
   timer_init();
   ppu_init(cart_get_context()->cgb_mode);
   apu_init();
+}
+
+BYTE speed_mode(){
+  return ctx.speed_switch_register;
+}
+void prepare_speed_switch(BYTE value){
+  ctx.speed_switch_register = (ctx.speed_switch_register & 0xFE) | (value & 1);
 }
 
 static void fetch_instruction() {
@@ -87,6 +95,10 @@ void cpu_log(){
 }
 
 bool cpu_step() {
+  if(hdma_is_active() || dma_is_active()){
+    emu_cycles(1);
+    return true;
+  }
   if(!ctx.halted) {
     //cpu_log();
     fetch_instruction();
@@ -106,3 +118,4 @@ bool cpu_step() {
   }
   return true;
 }
+
