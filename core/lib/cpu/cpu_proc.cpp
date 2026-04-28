@@ -466,7 +466,6 @@ void proc_HALT(){
   if(ctx.interrupt_flag & ctx.interrupt_enable_register){
     std::cout << "HALT BUG!\n";
   } 
-  //std::cout << "HALTING...\n";
 }
 
 void proc_DI(){
@@ -486,7 +485,6 @@ void proc_STOP(){
     }
     else ctx.speed_mode = NORMAL_SPEED_MODE;
   }
-  //std::cout << "STOPPING...\n";
 }
 
 void setup_instruction_processor(){

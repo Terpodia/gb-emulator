@@ -3,9 +3,12 @@
 enum HDMA_MODE {GENERAL_PURPOSE_DMA, HBLANK_DMA};
 
 struct hdma_context {
-  WORD source_address; 
+  WORD source_address;
+  WORD source_offset;
   WORD destination_address;
+  WORD destination_offset;
   WORD length;
+
   bool transferring;
   bool already_transferred_in_hblank;
 
