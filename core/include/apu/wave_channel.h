@@ -1,5 +1,5 @@
 #include <common.h>
-#include <apu_utils.h>
+#include <apu/apu_utils.h>
 
 struct wave_channel {
   BYTE registers[5];

@@ -1,4 +1,4 @@
-#include "square_channel.h"
+#include <apu/square_channel.h>
 
 square_channel::square_channel(){
   for(int i = 0; i < 5; i++) registers[i] = 0;

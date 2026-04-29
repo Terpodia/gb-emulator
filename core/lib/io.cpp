@@ -7,7 +7,7 @@
 #include "dma.h"
 #include "hdma.h"
 #include "lcd.h"
-#include "apu.h"
+#include "apu/apu.h"
 #include "ppu.h"
 
 BYTE io_read(WORD address){

@@ -1,4 +1,4 @@
-#include <noise_channel.h>
+#include <apu/noise_channel.h>
 
 noise_channel::noise_channel(){
   for(int i = 0; i < 4; i++) registers[i] = 0;
@@ -58,7 +58,8 @@ bool noise_channel::length_enable(){
 }
 
 void noise_channel::tick(){
-  if(clock_shift() >= 14 || !dac() || power == POWER_OFF) return;
+  if(!dac()) power = POWER_OFF;
+  if(clock_shift() >= 14 || power == POWER_OFF) return;
   divider--;
   if(!divider){
     divider = clock_divider() ? 16 * clock_divider() : 8;

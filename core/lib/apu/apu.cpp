@@ -1,6 +1,6 @@
 #include <platform.h>
 #include <cstring>
-#include <apu.h>
+#include <apu/apu.h>
 
 static apu_context ctx;
 

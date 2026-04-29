@@ -1,10 +1,10 @@
 #pragma once
 
 #include <common.h>
-#include <apu_utils.h>
-#include <square_channel.h>
-#include <wave_channel.h>
-#include <noise_channel.h>
+#include <apu/apu_utils.h>
+#include <apu/square_channel.h>
+#include <apu/wave_channel.h>
+#include <apu/noise_channel.h>
 
 #define SAMPLE_SIZE 4096
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common.h>
-#include <apu_utils.h>
+#include <apu/apu_utils.h>
 
 struct square_channel {
   BYTE registers[5];

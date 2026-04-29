@@ -1,4 +1,4 @@
-#include <wave_channel.h>
+#include <apu/wave_channel.h>
 #include <bus.h>
 
 wave_channel::wave_channel(){
@@ -54,7 +54,7 @@ void wave_channel::length_tick(){
 }
 
 void wave_channel::tick(){
-  if(!BIT(registers[WAVE_DAC_REGISTER], 7)) return;
+  if(!BIT(registers[WAVE_DAC_REGISTER], 7)) power = POWER_OFF;
   if(power == POWER_OFF) return;
   divider--;
   if(!divider){

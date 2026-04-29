@@ -8,7 +8,7 @@
 #include "emu.h"
 #include "dma.h"
 #include "ppu.h"
-#include "apu.h"
+#include "apu/apu.h"
 
 static emu_context emu_ctx;
 

@@ -3,7 +3,7 @@
 #include "emu.h"
 #include "ppu.h"
 #include "dma.h"
-#include "apu.h"
+#include "apu/apu.h"
 #include "hdma.h"
 #include "dma.h"
 #include "interrupts.h"
