@@ -25,9 +25,18 @@ void ppu_init(bool cgb_mode){
 
 static uint64_t frame_count;
 static uint64_t start_timer;
+static uint64_t target_frame_rate = 1000 / 60;
+static uint64_t prev_frame_time = 0;
 
 void frame_rate_update(){
   uint64_t current_frame_time = get_ticks();
+
+  if(current_frame_time - prev_frame_time < target_frame_rate){
+    uint64_t diff = target_frame_rate - (current_frame_time - prev_frame_time);
+    delay(diff);
+  }
+
+  current_frame_time = get_ticks();
 
   frame_count++;
   ppu_get_context()->current_frame++;
@@ -37,6 +46,8 @@ void frame_rate_update(){
     start_timer = current_frame_time;
     frame_count = 0;
   }
+
+  prev_frame_time = current_frame_time;
 }
 
 void ppu_tick(){
