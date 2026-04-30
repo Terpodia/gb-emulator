@@ -23,7 +23,8 @@ int ring_buffer::read(float *data, int sz){
   return to_read;
 }
 
-int ring_buffer::size(){
-  return write_pos.load(std::memory_order_relaxed) -
-         read_pos.load(std::memory_order_relaxed);
+int ring_buffer::available_space(){
+  int rp = read_pos.load(std::memory_order_relaxed);
+  int wp = write_pos.load(std::memory_order_relaxed);
+  return capacity - (wp - rp);
 }

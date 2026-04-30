@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include "platform.h"
-#include "apu.h"
+#include "apu/apu.h"
+#include <unistd.h>
 
 const float AUDIO_MASTER = 0.5f;
 
@@ -43,6 +44,10 @@ void fill_audio_buffer(){
 
   total_left_volume /= 4.0f, total_right_volume /= 4.0f;
 
+  while(ctx->audio_buffer.available_space() < 2){
+    usleep(1);
+  }
+
   ctx->audio_buffer.write(total_left_volume * AUDIO_MASTER);
   ctx->audio_buffer.write(total_right_volume * AUDIO_MASTER);
 }
@@ -50,16 +55,12 @@ void fill_audio_buffer(){
 void SDLCALL audio_callback(void *user_data, SDL_AudioStream* stream, int addition_amount, int sz){
   int floats_needed = addition_amount / sizeof(float);
   float buf[SAMPLE_SIZE];
-  while(floats_needed > 0){
-    int n = std::min(floats_needed, SAMPLE_SIZE);
+  int n = std::min(floats_needed, SAMPLE_SIZE);
 
-    if(apu_get_context()->audio_buffer.size() < n) continue;
-    
-    apu_get_context()->audio_buffer.read(buf, n);
+  int got = apu_get_context()->audio_buffer.read(buf, n);
 
-    SDL_PutAudioStreamData(stream, buf, n * sizeof(float));
-    floats_needed -= n;
-  }
+  SDL_PutAudioStreamData(stream, buf, got * sizeof(float));
+  floats_needed -= got;
 }
 
 void platform_audio_init(int samples_size){
