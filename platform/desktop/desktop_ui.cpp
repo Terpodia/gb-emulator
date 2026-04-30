@@ -1,10 +1,9 @@
 #include <SDL3/SDL.h>
-#include "platform.h"
-#include "joypad.h"
-#include "emu.h"
-#include "bus.h"
-#include "ppu.h"
-#include "apu.h"
+#include <platform.h>
+#include <joypad.h>
+#include <emu.h>
+#include <bus.h>
+#include <ppu/ppu.h>
 
 const int SCALE = 6;
 const int TILE_WIDTH = 8;

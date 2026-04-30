@@ -1,14 +1,14 @@
-#include "io.h"
-#include "joypad.h"
-#include "ram.h"
-#include "timer.h"
-#include "serial.h"
-#include "cpu.h"
-#include "dma.h"
-#include "hdma.h"
-#include "lcd.h"
-#include "apu/apu.h"
-#include "ppu.h"
+#include <io.h>
+#include <joypad.h>
+#include <ram.h>
+#include <timer.h>
+#include <serial.h>
+#include <cpu/cpu.h>
+#include <ppu/dma.h>
+#include <ppu/hdma.h>
+#include <ppu/lcd.h>
+#include <ppu/ppu.h>
+#include <apu/apu.h>
 
 BYTE io_read(WORD address){
   if(address == 0xFF00) return joypad_read();

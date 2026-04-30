@@ -1,7 +1,7 @@
-#include "interrupts.h"
-#include "cpu.h"
-#include "cpu_stack.h"
-#include "emu.h"
+#include <interrupts.h>
+#include <cpu/cpu.h>
+#include <cpu_stack.h>
+#include <emu.h>
 
 extern cpu_context ctx;
 

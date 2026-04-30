@@ -1,4 +1,4 @@
-#include "mbc3.h"
+#include "cartridge/mbc3.h"
 #include "cartridge/cart.h"
 
 void latch_time(){

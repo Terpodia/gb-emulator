@@ -40,7 +40,7 @@ struct ring_buffer {
 
   int write(float value);
   int read(float *data, int sz);
-  int size();
+  int available_space();
 };
 
 #define WAVE_RAM_START 0xFF30

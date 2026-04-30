@@ -1,7 +1,7 @@
-#include "pixel_fifo.h"
-#include "ppu.h"
-#include "lcd.h"
-#include "bus.h"
+#include <ppu/pixel_fifo.h>
+#include <ppu/ppu.h>
+#include <ppu/lcd.h>
+#include <bus.h>
 
 bool window_is_visible(){
   return lcd_get_context()->wx < XRES + 7 && lcd_get_context()->wy < YRES && WIN_ENABLE;

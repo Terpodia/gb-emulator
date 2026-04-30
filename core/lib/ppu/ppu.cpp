@@ -1,8 +1,8 @@
-#include "platform.h"
-#include "ppu_sm.h"
+#include <platform.h>
+#include <ppu/ppu_sm.h>
 #include <cstring>
-#include "ppu.h"
-#include "lcd.h"
+#include <ppu/ppu.h>
+#include <ppu/lcd.h>
 
 static ppu_context ctx;
 

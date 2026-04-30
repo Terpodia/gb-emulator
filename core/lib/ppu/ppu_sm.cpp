@@ -1,9 +1,9 @@
-#include "pixel_fifo.h"
-#include "interrupts.h"
+#include <ppu/pixel_fifo.h>
+#include <ppu/ppu_sm.h>
+#include <ppu/ppu.h>
+#include <ppu/lcd.h>
+#include <interrupts.h>
 #include <algorithm>
-#include "ppu_sm.h"
-#include "lcd.h"
-#include "ppu.h"
 
 void compare_lyc(){
   if(lcd_get_context()->ly == lcd_get_context()->lyc){

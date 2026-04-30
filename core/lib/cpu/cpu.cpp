@@ -1,14 +1,14 @@
-#include "bus.h"
-#include "cpu.h"
-#include "emu.h"
-#include "ppu.h"
-#include "dma.h"
-#include "apu/apu.h"
-#include "hdma.h"
-#include "dma.h"
-#include "interrupts.h"
-#include "timer.h"
-#include "cartridge/cart.h"
+#include <bus.h>
+#include <cpu/cpu.h>
+#include <emu.h>
+#include <apu/apu.h>
+#include <ppu/ppu.h>
+#include <ppu/dma.h>
+#include <ppu/hdma.h>
+#include <ppu/dma.h>
+#include <interrupts.h>
+#include <timer.h>
+#include <cartridge/cart.h>
 #include <iomanip>
 
 cpu_context ctx;

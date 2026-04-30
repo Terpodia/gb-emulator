@@ -1,14 +1,14 @@
-#include "cartridge/save_data.h"
-#include "cartridge/cart.h"
-#include "platform.h"
-#include "serial.h"
-#include "timer.h"
-#include "hdma.h"
-#include "cpu.h"
-#include "emu.h"
-#include "dma.h"
-#include "ppu.h"
-#include "apu/apu.h"
+#include <cartridge/save_data.h>
+#include <cartridge/cart.h>
+#include <platform.h>
+#include <serial.h>
+#include <timer.h>
+#include <cpu/cpu.h>
+#include <emu.h>
+#include <ppu/hdma.h>
+#include <ppu/dma.h>
+#include <ppu/ppu.h>
+#include <apu/apu.h>
 
 static emu_context emu_ctx;
 

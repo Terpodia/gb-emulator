@@ -1,6 +1,6 @@
-#include "dma.h"
-#include "ppu.h"
-#include "bus.h"
+#include <ppu/dma.h>
+#include <ppu/ppu.h>
+#include <bus.h>
 
 const WORD OAM_START = 0xFE00;
 

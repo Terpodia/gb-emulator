@@ -1,6 +1,6 @@
-#include "cpu_stack.h"
-#include "cpu.h"
-#include "bus.h"
+#include <cpu_stack.h>
+#include <cpu/cpu.h>
+#include <bus.h>
 
 extern cpu_context ctx;
 

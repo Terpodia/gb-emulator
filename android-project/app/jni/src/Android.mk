@@ -11,6 +11,8 @@ EMU_ROOT := $(LOCAL_PATH)/../../../..
 LOCAL_SRC_FILES := $(wildcard $(EMU_ROOT)/core/lib/*.cpp) \
                    $(wildcard $(EMU_ROOT)/core/lib/cpu/*.cpp) \
                    $(wildcard $(EMU_ROOT)/core/lib/cartridge/*.cpp) \
+                   $(wildcard $(EMU_ROOT)/core/lib/apu/*.cpp) \
+                   $(wildcard $(EMU_ROOT)/core/lib/ppu/*.cpp) \
                    $(wildcard $(EMU_ROOT)/platform/android/*.cpp)
 
 SDL_PATH := ../SDL3-3.4.4  # SDL

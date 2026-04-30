@@ -1,10 +1,10 @@
-#include "bus.h"
-#include "ram.h"
-#include "cpu.h"
-#include "io.h"
-#include "ppu.h"
-#include "dma.h"
-#include "cartridge/cart.h"
+#include <bus.h>
+#include <ram.h>
+#include <cpu/cpu.h>
+#include <io.h>
+#include <ppu/ppu.h>
+#include <ppu/dma.h>
+#include <cartridge/cart.h>
 
 BYTE bus_read(WORD address) {
   if(address <= 0x7FFF){

@@ -1,12 +1,11 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_log.h>
-#include "platform.h"
-#include "joypad.h"
-#include "emu.h"
-#include "bus.h"
-#include "ppu.h"
-#include "apu.h"
+#include <platform.h>
+#include <joypad.h>
+#include <emu.h>
+#include <bus.h>
+#include <ppu/ppu.h>
 #include <vector>
 
 enum BUTTONS { KEY_A, KEY_B, KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT, KEY_START, KEY_SELECT, KEY_NONE };

@@ -1,10 +1,10 @@
 #include "cartridge/cart.h"
 #include "cartridge/debug.h"
 #include "cartridge/read_file.h"
-#include "mbc1.h"
-#include "mbc2.h"
-#include "mbc3.h"
-#include "mbc5.h"
+#include "cartridge/mbc1.h"
+#include "cartridge/mbc2.h"
+#include "cartridge/mbc3.h"
+#include "cartridge/mbc5.h"
 #include <cstring>
 
 static cart_context ctx;

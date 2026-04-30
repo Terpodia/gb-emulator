@@ -1,9 +1,9 @@
-#include "cpu.h"
-#include "emu.h"
-#include "bus.h"
-#include "cpu_stack.h"
-#include "instructions.h"
-#include "interrupts.h"
+#include <cpu/cpu.h>
+#include <cpu/instructions.h>
+#include <emu.h>
+#include <bus.h>
+#include <cpu_stack.h>
+#include <interrupts.h>
 
 extern cpu_context ctx;
 

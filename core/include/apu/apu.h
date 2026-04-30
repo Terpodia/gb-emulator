@@ -20,7 +20,7 @@ struct apu_context {
 
   BYTE wave_pattern_ram[16];
 
-  ring_buffer audio_buffer{SAMPLE_SIZE * 32};
+  ring_buffer audio_buffer{SAMPLE_SIZE * 4};
 
   WORD apu_tick;
 

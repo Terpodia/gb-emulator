@@ -1,6 +1,6 @@
-#include "hdma.h"
-#include "lcd.h"
-#include "bus.h"
+#include <ppu/hdma.h>
+#include <ppu/lcd.h>
+#include <bus.h>
 
 hdma_context hdma_ctx;
 

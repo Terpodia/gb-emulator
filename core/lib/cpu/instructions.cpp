@@ -1,4 +1,4 @@
-#include "instructions.h"
+#include <cpu/instructions.h>
 
 instruction instructions[0x100];
 

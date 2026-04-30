@@ -1,7 +1,7 @@
-#include "lcd.h"
-#include "dma.h"
-#include "ppu.h"
-#include "ppu_sm.h"
+#include <ppu/lcd.h>
+#include <ppu/dma.h>
+#include <ppu/ppu.h>
+#include <ppu/ppu_sm.h>
 
 static uint32_t dmg_default_color[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000};
 

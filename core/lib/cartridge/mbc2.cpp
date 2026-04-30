@@ -1,4 +1,4 @@
-#include "mbc2.h"
+#include "cartridge/mbc2.h"
 #include "cartridge/cart.h"
 
 BYTE mbc2_read(WORD address){

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common.h>
-#include <instructions.h>
+#include <cpu/instructions.h>
 
 struct cpu_registers {
   BYTE a;
