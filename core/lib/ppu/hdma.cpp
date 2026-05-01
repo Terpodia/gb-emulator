@@ -1,5 +1,6 @@
 #include <ppu/hdma.h>
 #include <ppu/lcd.h>
+#include <ppu/ppu.h>
 #include <bus.h>
 
 hdma_context hdma_ctx;
@@ -60,19 +61,20 @@ void hdma_trigger_transfer(BYTE value){
 bool hdma_is_active(){
   if(!hdma_ctx.transferring) return false;
   if(hdma_ctx.mode == GENERAL_PURPOSE_DMA) return true;
+  if(!(lcd_get_context()->lcdc & 0x80)) return false;
 
   return LCD_MODE == MODE_HBLANK && !hdma_ctx.already_transferred_in_hblank;
 }
 
 void hdma_tick(){
-  if(LCD_MODE != MODE_HBLANK) 
+  if(LCD_MODE != MODE_HBLANK)
     hdma_ctx.already_transferred_in_hblank = false;
 
   if(!hdma_is_active()) return;
 
   for(int i = 0; i < 2; i++){
     BYTE value = bus_read(hdma_ctx.source_offset);
-    bus_write(hdma_ctx.destination_offset, value);
+    ppu_vram_write(hdma_ctx.destination_offset, value);
 
     hdma_ctx.transferred_bytes++;
     hdma_ctx.length--;

@@ -4,6 +4,7 @@
 #include <io.h>
 #include <ppu/ppu.h>
 #include <ppu/dma.h>
+#include <ppu/lcd.h>
 #include <cartridge/cart.h>
 
 BYTE bus_read(WORD address) {
@@ -13,6 +14,7 @@ BYTE bus_read(WORD address) {
   }
   else if(address <= 0x9FFF){
     // VRAM
+    if(LCD_MODE == MODE_PIXEL_TRANSFER) return 0xFF;
     return ppu_vram_read(address);
   }
   else if(address <= 0xBFFF){
@@ -30,6 +32,7 @@ BYTE bus_read(WORD address) {
   else if(address <= 0xFE9F){
     // OAM
     if(dma_is_active()) return 0;
+    if(LCD_MODE == MODE_OAM || LCD_MODE == MODE_PIXEL_TRANSFER) return 0xFF;
     return ppu_oam_read(address);
   }
   else if(address <= 0xFEFF){
@@ -59,6 +62,7 @@ void bus_write(WORD address, BYTE value) {
   }
   else if(address <= 0x9FFF){
     // VRAM
+    if(LCD_MODE == MODE_PIXEL_TRANSFER) return;
     ppu_vram_write(address, value);
   }
   else if(address <= 0xBFFF){
@@ -76,6 +80,8 @@ void bus_write(WORD address, BYTE value) {
   else if(address <= 0xFE9F){
     // OAM
     if(dma_is_active()) return;
+    if(LCD_MODE == MODE_OAM || LCD_MODE == MODE_PIXEL_TRANSFER) return;
+
     ppu_oam_write(address, value);
   }
   else if(address <= 0xFEFF){

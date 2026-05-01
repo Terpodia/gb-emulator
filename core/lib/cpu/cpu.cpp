@@ -95,7 +95,7 @@ void cpu_log(){
 }
 
 bool cpu_step() {
-  if(hdma_is_active() || dma_is_active()){
+  if(hdma_is_active()){
     emu_cycles(1);
     return true;
   }

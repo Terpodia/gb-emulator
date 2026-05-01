@@ -73,6 +73,7 @@ struct ppu_context {
   uint64_t current_frame;
 
   BYTE window_line;
+  bool window_rendered_this_frame;
 };
 
 ppu_context *ppu_get_context();

@@ -16,6 +16,7 @@ void ppu_init(bool cgb_mode){
   ctx.ppu_ticks = 0;
   ctx.current_frame = 0;
   ctx.window_line = 0;
+  ctx.window_rendered_this_frame = false;
   ctx.cgb_mode = cgb_mode;
 
   memset(ctx.video_buffer, 0, sizeof(ctx.video_buffer));
@@ -51,15 +52,16 @@ void frame_rate_update(){
 }
 
 void ppu_tick(){
-  lcd_get_context()->off_clock++;
   if(!(lcd_get_context()->lcdc & 0x80)) {
+    lcd_get_context()->off_clock++;
     if(lcd_get_context()->off_clock >= 70224){
-      lcd_get_context()->off_clock = 0;
+      lcd_get_context()->off_clock -= 70224;
       frame_rate_update();
     }
     return;
   }
 
+  lcd_get_context()->off_clock = 0;
   ctx.ppu_ticks++;
   switch(LCD_MODE){
     case MODE_OAM:

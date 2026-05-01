@@ -17,23 +17,22 @@ extern cpu_context ctx;
 bool odd_cycle;
 
 void emu_cycles(int cpu_cycles) {
-  for(int i=0; i<cpu_cycles; i++){
+  for(int i = 0; i < cpu_cycles; i++){
     for(int j=0; j<4; j++){
       timer_tick();
       serial_tick();
     }
     dma_tick();
-  }
-  for(int i=0; i<cpu_cycles; i++){
+
     if(ctx.speed_mode == DOUBLE_SPEED_MODE){
       odd_cycle = !odd_cycle;
       if(odd_cycle) continue;
     }
+    hdma_tick();
     for(int j=0; j<4; j++){
       ppu_tick();
       apu_tick();
     }
-    hdma_tick();
   }
 }
 

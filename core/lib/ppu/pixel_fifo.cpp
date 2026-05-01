@@ -1,7 +1,6 @@
 #include <ppu/pixel_fifo.h>
 #include <ppu/ppu.h>
 #include <ppu/lcd.h>
-#include <bus.h>
 
 bool window_is_visible(){
   return lcd_get_context()->wx < XRES + 7 && lcd_get_context()->wy < YRES && WIN_ENABLE;
@@ -277,6 +276,11 @@ void pixel_fifo_process(){
   pfc->map_x = pfc->lx + lcd_get_context()->scx;
 
   pfc->tile_y = ((lcd_get_context()->ly + lcd_get_context()->scy) % 8) * 2;
+
+  if(window_in_range() && !ppu_get_context()->window_rendered_this_frame){
+    ppu_get_context()->window_line = lcd_get_context()->ly - lcd_get_context()->wy;
+    ppu_get_context()->window_rendered_this_frame = true;
+  }
 
   if(pfc->bgw_fetched_is_window)
     pfc->tile_y = (ppu_get_context()->window_line % 8) * 2;

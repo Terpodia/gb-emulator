@@ -2,6 +2,8 @@
 #include <ppu/ppu_sm.h>
 #include <ppu/ppu.h>
 #include <ppu/lcd.h>
+#include <ppu/dma.h>
+#include <ppu/hdma.h>
 #include <interrupts.h>
 #include <algorithm>
 
@@ -16,7 +18,8 @@ void compare_lyc(){
 }
 
 void increment_ly(){
-  if(window_is_visible() && lcd_get_context()->ly >= lcd_get_context()->wy){
+  if(window_is_visible() && lcd_get_context()->ly >= lcd_get_context()->wy
+     && ppu_get_context()->window_rendered_this_frame){
     ppu_get_context()->window_line++;
   }
   lcd_get_context()->ly++;
@@ -26,6 +29,7 @@ void increment_ly(){
 void load_line_sprites(){
   oam_entry *line_sprites = ppu_get_context()->line_sprites;
   int &line_sprites_number = ppu_get_context()->line_sprites_number;
+
   line_sprites_number = 0;
   for(int i = 0; i < 40; i++){
     // at most 10 sprites per line
@@ -98,6 +102,7 @@ void ppu_mode_vblank(){
 
       lcd_get_context()->ly = 0;
       ppu_get_context()->window_line = 0;
+      ppu_get_context()->window_rendered_this_frame = false;
 
       compare_lyc();
       frame_rate_update();

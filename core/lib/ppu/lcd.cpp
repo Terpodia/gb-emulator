@@ -52,13 +52,16 @@ void dmg_update_palette(WORD address, BYTE pal){
 void lcd_write(WORD address, BYTE value){
   if(address == 0xFF40){
     if((value & 0x80) && !(ctx.lcdc & 0x80)) {
-      SET_LCD_MODE(MODE_OAM); 
-      ppu_get_context()->ppu_ticks = 0;
+      SET_LCD_MODE(MODE_OAM);
       compare_lyc();
     }
     if(!(value & 0x80) && (ctx.lcdc & 0x80)) {
-      SET_LCD_MODE(MODE_HBLANK); 
+      SET_LCD_MODE(MODE_HBLANK);
       ctx.ly = 0;
+      LCDS_LYC_SET(0);
+
+      ppu_get_context()->window_line = 0;
+      ppu_get_context()->ppu_ticks = 0;
     }
   }
   if(address == 0xFF41){
