@@ -1,7 +1,7 @@
 # gb-emulator
 A Gameboy emulator for Linux
 
-![PKM](pkm.jpg)
+![COLLAGE](collage.jpg)
 
 ## Prerequisites
 - Build-Essential `sudo apt install build-essential`
