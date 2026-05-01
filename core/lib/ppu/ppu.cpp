@@ -6,24 +6,6 @@
 
 static ppu_context ctx;
 
-ppu_context *ppu_get_context(){
-  return &ctx;
-}
-
-void ppu_init(bool cgb_mode){
-  lcd_init(cgb_mode);
-  SET_LCD_MODE(MODE_OAM);
-  ctx.ppu_ticks = 0;
-  ctx.current_frame = 0;
-  ctx.window_line = 0;
-  ctx.window_rendered_this_frame = false;
-  ctx.cgb_mode = cgb_mode;
-
-  memset(ctx.video_buffer, 0, sizeof(ctx.video_buffer));
-  memset(ctx.oam, 0, sizeof(ctx.oam));
-  memset(ctx.vram, 0, sizeof(ctx.vram));
-}
-
 static uint64_t frame_count;
 static uint64_t start_timer;
 static uint64_t target_frame_rate = 1000 / 60;
@@ -51,18 +33,54 @@ void frame_rate_update(){
   prev_frame_time = current_frame_time;
 }
 
+ppu_context *ppu_get_context(){
+  return &ctx;
+}
+
+void ppu_init(bool cgb_mode){
+  lcd_init(cgb_mode);
+  SET_LCD_MODE(MODE_OAM);
+  ctx.ppu_ticks = 0;
+  ctx.current_frame = 0;
+  ctx.window_line = 0;
+  ctx.window_rendered_this_frame = false;
+  ctx.cgb_mode = cgb_mode;
+  ctx.was_on = true;
+
+  memset(ctx.video_buffer, 0, sizeof(ctx.video_buffer));
+  memset(ctx.oam, 0, sizeof(ctx.oam));
+  memset(ctx.vram, 0, sizeof(ctx.vram));
+}
+
 void ppu_tick(){
-  if(!(lcd_get_context()->lcdc & 0x80)) {
-    lcd_get_context()->off_clock++;
-    if(lcd_get_context()->off_clock >= 70224){
-      lcd_get_context()->off_clock -= 70224;
+  if(ctx.was_on && !BIT(lcd_get_context()->lcdc, 7)){
+    SET_LCD_MODE(MODE_HBLANK);
+    LCDS_LYC_SET(0);
+
+    lcd_get_context()->ly = 0;
+    ctx.window_line = 0;
+    ctx.ppu_ticks = 0;
+  }
+
+  if(!ctx.was_on && BIT(lcd_get_context()->lcdc, 7)){
+    ctx.current_dot = 0;
+    SET_LCD_MODE(MODE_OAM);
+    compare_lyc();
+  }
+
+  ctx.was_on = BIT(lcd_get_context()->lcdc, 7);
+  ctx.current_dot++;
+
+  if(!BIT(lcd_get_context()->lcdc, 7)) {
+    if(ctx.current_dot >= 70224){
+      ctx.current_dot -= 70224;
       frame_rate_update();
     }
     return;
   }
 
-  lcd_get_context()->off_clock = 0;
   ctx.ppu_ticks++;
+
   switch(LCD_MODE){
     case MODE_OAM:
       ppu_mode_oam();
@@ -86,6 +104,7 @@ BYTE ppu_oam_read(WORD address){
   BYTE *oam = (BYTE *)ctx.oam;
   return oam[address - 0xFE00];
 }
+
 void ppu_oam_write(WORD address, BYTE value){
   BYTE *oam = (BYTE *)ctx.oam;
   oam[address - 0xFE00] = value;
@@ -94,12 +113,15 @@ void ppu_oam_write(WORD address, BYTE value){
 BYTE ppu_vram_read(WORD address){
   return ctx.vram[ctx.vram_current_bank][address - 0x8000];
 }
+
 void ppu_vram_write(WORD address, BYTE value){
   ctx.vram[ctx.vram_current_bank][address - 0x8000] = value;
 }
+
 BYTE ppu_get_vram_bank(){
   return ctx.vram_current_bank | 0xFE;
 }
+
 void ppu_set_vram_bank(BYTE bank_number){
   ctx.vram_current_bank = bank_number & 1;
 }

@@ -103,6 +103,7 @@ void ppu_mode_vblank(){
       lcd_get_context()->ly = 0;
       ppu_get_context()->window_line = 0;
       ppu_get_context()->window_rendered_this_frame = false;
+      ppu_get_context()->current_dot = 0;
 
       compare_lyc();
       frame_rate_update();

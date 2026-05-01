@@ -1,10 +1,7 @@
 #include <ppu/pixel_fifo.h>
 #include <ppu/ppu.h>
 #include <ppu/lcd.h>
-
-bool window_is_visible(){
-  return lcd_get_context()->wx < XRES + 7 && lcd_get_context()->wy < YRES && WIN_ENABLE;
-}
+#include <ppu/cgb_palettes.h>
 
 bool window_in_range(){
   if(!window_is_visible()) return false;
@@ -34,28 +31,16 @@ void transfer_pixels(){
 }
 
 uint32_t get_bgw_palette(BYTE color){
-  if(!ppu_get_context()->cgb_mode){ 
+  if(!ppu_get_context()->cgb_mode){
     if(!BGW_ENABLE) color = 0;
     return lcd_get_context()->dmg_bg_colors[color];
   }
-  
+
   pixel_fifo_ctx *pfc = &ppu_get_context()->pfc;
+
   int palette_index = pfc->bgw_attribute & 0x7;
-  int color_index = palette_index * 4 * 2 + color * 2;
 
-  WORD color_rgb5 = 0;
-  color_rgb5 += (WORD)lcd_get_context()->cgb_bg_palette[color_index];
-  color_rgb5 += (WORD)lcd_get_context()->cgb_bg_palette[color_index + 1] << 8;
-
-  uint32_t r = color_rgb5 & 0x1F;
-  uint32_t g = (color_rgb5 >> 5) & 0x1F;
-  uint32_t b = (color_rgb5 >> 10) & 0x1F;
-
-  r = (r << 3) | (r >> 2);
-  g = (g << 3) | (g >> 2);
-  b = (b << 3) | (b >> 2);
-
-  return (0xFF << 24) | (r << 16) | (g << 8) | b;
+  return bg_rgb_color_from_palette(palette_index, color);
 }
 
 uint32_t get_obj_palette(oam_entry *sprite_entry, BYTE sprite_color){
@@ -67,20 +52,8 @@ uint32_t get_obj_palette(oam_entry *sprite_entry, BYTE sprite_color){
   }
 
   int palette_index = sprite_entry->cgb_palette & 0x7;
-  int color_index = palette_index * 4 * 2 + sprite_color * 2;
-  WORD color_rgb5 = 0;
-  color_rgb5 += (WORD)lcd_get_context()->cgb_obj_palette[color_index];
-  color_rgb5 += (WORD)lcd_get_context()->cgb_obj_palette[color_index + 1] << 8;
 
-  uint32_t r = color_rgb5 & 0x1F;
-  uint32_t g = (color_rgb5 >> 5) & 0x1F;
-  uint32_t b = (color_rgb5 >> 10) & 0x1F;
-
-  r = (r << 3) | (r >> 2);
-  g = (g << 3) | (g >> 2);
-  b = (b << 3) | (b >> 2);
-
-  return (0xFF << 24) | (r << 16) | (g << 8) | b;
+  return obj_rgb_color_from_palette(palette_index, sprite_color);
 }
 
 void pixel_sprite_color(BYTE color, uint32_t &palette){

@@ -27,7 +27,6 @@ void lcd_init(BYTE cgb_mode){
     ctx.dmg_sp1_colors[i] = dmg_default_color[i];
     ctx.dmg_sp2_colors[i] = dmg_default_color[i];
   }
-  ctx.off_clock = 0;
   ctx.object_priority_mode = !cgb_mode;
 }
 
@@ -50,20 +49,6 @@ void dmg_update_palette(WORD address, BYTE pal){
 }
 
 void lcd_write(WORD address, BYTE value){
-  if(address == 0xFF40){
-    if((value & 0x80) && !(ctx.lcdc & 0x80)) {
-      SET_LCD_MODE(MODE_OAM);
-      compare_lyc();
-    }
-    if(!(value & 0x80) && (ctx.lcdc & 0x80)) {
-      SET_LCD_MODE(MODE_HBLANK);
-      ctx.ly = 0;
-      LCDS_LYC_SET(0);
-
-      ppu_get_context()->window_line = 0;
-      ppu_get_context()->ppu_ticks = 0;
-    }
-  }
   if(address == 0xFF41){
     ctx.lcds = (value & 0x78) | (ctx.lcds & 0x07);
     return;
@@ -77,46 +62,7 @@ void lcd_write(WORD address, BYTE value){
   p[address - 0xFF40] = value;
 }
 
-BYTE lcd_cgb_read(WORD address){
-  switch(address){
-    case 0xFF68: 
-      return ctx.bcps;
-
-    case 0xFF69: 
-      return ctx.cgb_bg_palette[ctx.bcps & 0x3F];
-
-    case 0xFF6A:
-      return ctx.ocps;
-
-    case 0xFF6B:
-      return ctx.cgb_obj_palette[ctx.ocps & 0x3F];
-  }
-  return 0xFF;
+bool window_is_visible(){
+  return ctx.wx < XRES + 7 && ctx.wy < YRES && WIN_ENABLE;
 }
-void lcd_cgb_write(WORD address, BYTE value){
-  switch(address){
-    case 0xFF68: 
-      ctx.bcps = value;
-      break;
 
-    case 0xFF69: 
-      ctx.cgb_bg_palette[ctx.bcps & 0x3F] = value;
-      if(BIT(ctx.bcps, 7)){
-        ctx.bcps = (ctx.bcps & 0x3F) + 1;
-        ctx.bcps &= 0x3F, ctx.bcps |= 1<<7;
-      }
-      break;
-
-    case 0xFF6A:
-      ctx.ocps = value;
-      break;
-
-    case 0xFF6B:
-      ctx.cgb_obj_palette[ctx.ocps & 0x3F] = value;
-      if(BIT(ctx.ocps, 7)){
-        ctx.ocps = (ctx.ocps & 0x3F) + 1;
-        ctx.ocps &= 0x3F, ctx.ocps |= 1<<7;
-      }
-      break;
-  }
-}
