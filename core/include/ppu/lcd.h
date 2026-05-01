@@ -15,19 +15,11 @@ struct lcd_context {
   BYTE wy;
   BYTE wx;
 
-  BYTE bcps;
-  BYTE cgb_bg_palette[64];
-
-  BYTE ocps;
-  BYTE cgb_obj_palette[64];
-
   BYTE object_priority_mode;
 
   uint32_t dmg_bg_colors[4];
   uint32_t dmg_sp1_colors[4];
   uint32_t dmg_sp2_colors[4];
-
-  uint32_t off_clock;
 };
 
 enum lcd_mode {
@@ -72,5 +64,5 @@ void lcd_init(BYTE cgb_mode);
 BYTE lcd_read(WORD address);
 void lcd_write(WORD address, BYTE value);
 
-BYTE lcd_cgb_read(WORD address);
-void lcd_cgb_write(WORD address, BYTE value);
+bool window_is_visible();
+

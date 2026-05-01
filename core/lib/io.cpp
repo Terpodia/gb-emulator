@@ -7,6 +7,7 @@
 #include <ppu/dma.h>
 #include <ppu/hdma.h>
 #include <ppu/lcd.h>
+#include <ppu/cgb_palettes.h>
 #include <ppu/ppu.h>
 #include <apu/apu.h>
 
@@ -23,7 +24,7 @@ BYTE io_read(WORD address){
 
   if(address >= 0xFF40 && address <= 0xFF4B) return lcd_read(address);
 
-  if(address >= 0xFF68 && address <= 0xFF6B) return lcd_cgb_read(address);
+  if(address >= 0xFF68 && address <= 0xFF6B) return cgb_palette_read(address);
 
   if(address == 0xFF4F) return ppu_get_vram_bank();
 
@@ -64,7 +65,7 @@ void io_write(WORD address, BYTE value){
     return;
   }
   if(address >= 0xFF68 && address <= 0xFF6B){
-    lcd_cgb_write(address, value);
+    cgb_palette_write(address, value);
     return;
   }
   if(address == 0xFF4F){

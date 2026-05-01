@@ -70,10 +70,13 @@ struct ppu_context {
   oam_entry obj_fetched_entry[MAX_CHECKING_SPRITES_ON_PIXEL];
 
   WORD ppu_ticks;
+  uint32_t current_dot;
   uint64_t current_frame;
 
   BYTE window_line;
   bool window_rendered_this_frame;
+
+  bool was_on;
 };
 
 ppu_context *ppu_get_context();
