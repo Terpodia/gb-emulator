@@ -1,14 +1,14 @@
 # gb-emulator
-A Gameboy emulator for Linux
+A Gameboy & Gameboy Color emulator for Linux and Android!
 
 ![COLLAGE](collage.jpg)
 
 ## Prerequisites
 - Build-Essential `sudo apt install build-essential`
-- SDL2 library `sudo apt install libsdl2-dev`
-- SDL2-ttf library `sudo apt install libsdl2-ttf-dev`
+- SDL3 library `sudo apt install libsdl3-dev`
+- SDL3-ttf library `sudo apt install libsdl3-ttf-dev`
+- SDL3-image library `sudo apt install libsdl3-image-dev`
 - Cmake `sudo apt install cmake`
-- Check `sudo apt install check`
 
 ## Command Line Build
 
@@ -17,5 +17,9 @@ mkdir build
 cd build
 cmake ..
 make
-gbemu rom_name.gb
+./platform/desktop/gbemu path/to/rom
 ```
+
+## Android Build
+
+Open android-project folder with Android-Studio and press build.
