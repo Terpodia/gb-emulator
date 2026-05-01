@@ -23,3 +23,17 @@ make
 ## Android Build
 
 Open android-project folder with Android-Studio and press build.
+
+## Controls (Desktop)
+
+| Button | Key |
+| --- | --- |
+| A | <kbd>J</kbd> |
+| B | <kbd>K</kbd> |
+| Start |<kbd>Space</kbd>
+| Select | <kbd>Enter</kbd> |
+| Up | <kbd>W</kbd> |
+| Down | <kbd>S</kbd> |
+| Left | <kbd>A</kbd> |
+| Right | <kbd>D</kbd> |
+
