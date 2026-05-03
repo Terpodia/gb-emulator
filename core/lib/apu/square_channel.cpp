@@ -103,7 +103,7 @@ void square_channel::trigger(){
   power = POWER_ON;
   divider = (2048 - frequency());
   volume_counter = initial_volume();
-  if(!length_counter) length_counter = 64 - initial_length();
+  if(!length_counter) length_counter = 64;
   wave_step = 0;
   volume_envelope_counter = envelope_pace();
 

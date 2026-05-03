@@ -77,7 +77,7 @@ void noise_channel::trigger(){
   divider = clock_divider() ? 16 * clock_divider() : 8;
   divider <<= clock_shift();
   volume_counter = initial_volume();
-  if(!length_counter) length_counter = 64 - initial_length();
+  if(!length_counter) length_counter = 64;
   volume_envelope_counter = envelope_pace();
   lfsr = 0 ;
 }

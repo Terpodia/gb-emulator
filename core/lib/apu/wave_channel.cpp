@@ -43,7 +43,7 @@ bool wave_channel::length_enable(){
 void wave_channel::trigger(){
   power = POWER_ON;
   divider = (2048 - frequency()) * 2;
-  if(!length_counter) length_counter = 256 - registers[WAVE_LENGTH_REGISTER];
+  if(!length_counter) length_counter = 256;
   wave_step = 1;
 }
 
